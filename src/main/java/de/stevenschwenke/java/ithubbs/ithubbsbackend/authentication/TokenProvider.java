@@ -36,7 +36,7 @@ public class TokenProvider {
 
     private long tokenValidityInMilliseconds;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret ?: 'A long-enough string, for example this one because its really long and so secure. Yeay! This is a really long string.'}")
     private String jwtSecret;
 
     @PostConstruct

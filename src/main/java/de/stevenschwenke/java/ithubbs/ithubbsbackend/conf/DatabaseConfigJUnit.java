@@ -9,7 +9,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("junit")
+@Profile({"junit", "default"})
 public class DatabaseConfigJUnit {
 
     @Bean

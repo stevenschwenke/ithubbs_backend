@@ -1,5 +1,7 @@
 = IT-Hub Braunschweig Backend
 
+image:https://travis-ci.org/stevenschwenke/ithubbs_backend.svg?branch=master["Build Status", link="https://travis-ci.org/stevenschwenke/ithubbs_backend"]
+
 This is the backend to http://www.ithubbs.de[ithubbs.de]
 
 == Setup PCF
