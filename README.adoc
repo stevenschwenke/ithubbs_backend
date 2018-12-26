@@ -1,0 +1,30 @@
+= IT-Hub Braunschweig Backend
+
+This is the backend to http://www.ithubbs.de[ithubbs.de]
+
+== Setup PCF
+Only once, set "User Provided Environment Variables":
+
+|===
+|key |value
+|JBP_CONFIG_OPEN_JDK_JRE | jre: { version: 10.0.2_13 }
+|SPRING_PROFILES_ACTIVE | test
+|jwt.secret | A long-enough string, for example this one because its really long and so secure. Yeay! This is a really long string.
+|===
+
+
+== Deploy to PCF
+For every deployment, do:
+
+1. Create jar with all dependencies
+
+    gradle bootJar
+
+1. Login to PCF
+
+    cf login -a api.run.pivotal.io
+
+1. Push
+
+    cf push -f manifest_test.yml
+

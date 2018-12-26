@@ -1,0 +1,64 @@
+server:
+  port: 8090
+  servlet:
+    context-path: /ithubbs
+
+client:
+  uris:
+    local: http://localhost:4200
+    test: https://ithubbstest.cfapps.io
+
+---
+#
+#logging:
+#  level:
+#    root: DEBUG
+#
+#---
+
+
+###
+#   Database Settings
+###
+spring:
+  profiles: local, junit, default, prod, test
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        show_sql: false
+        use_sql_comments: true
+        format_sql: true
+        # fix for exception, see https://github.com/pgjdbc/pgjdbc/issues/1102
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  ###
+  #   H2 Settings
+  ###
+  h2:
+    console:
+      enabled: true
+      path: /console
+      settings:
+        trace: false
+        web-allow-others: false
+---
+spring:
+  profiles: integration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        show_sql: false
+        use_sql_comments: true
+        format_sql: true
+        # fix for exception, see https://github.com/pgjdbc/pgjdbc/issues/1102
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+---
+
+jwt:
+  expires_in: 7200 # 2 hours
