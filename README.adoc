@@ -30,3 +30,9 @@ For every deployment, do:
 
     cf push -f manifest_test.yml
 
+== Local development: H2 console
+To access the local database, visit http://localhost:8090/ithubbs/console with
+
+* JDBC URL: jdbc:h2:./h2/ithubbsh2db;
+* User Name: sa
+* empty password
