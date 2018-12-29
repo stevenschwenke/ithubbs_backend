@@ -37,7 +37,10 @@ To access the local database, visit http://localhost:8090/ithubbs/console with
 * User Name: sa
 * empty password
 
-== Running on PCF
+== Operation
+This section is about some aspects concerning the operation of this software. It was developed to run on https://pivotal.io/platform[Pivotal Cloud Foundry] which is why this manual focuses on this platform.
+
+=== Running on PCF
 
 The following configuration is sufficient to run on Pivotal Cloudfoundry:
 
@@ -47,3 +50,6 @@ The following configuration is sufficient to run on Pivotal Cloudfoundry:
 * Disk Allocated: 512 MB
 * PostgreSQL with free plan
 * Price per month on Pivotal Cloudfoundry: *< $21,60*
+
+=== Database Backup
+* ElephantSQL, a PostgreSQL as-a-service provided by Pivotal Cloudfoundry, has https://www.elephantsql.com/docs/backups.html[automated backups]. There will be a daily database backup.
