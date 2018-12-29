@@ -18,27 +18,42 @@
             <column name="id" type="${long_type}">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
-            <column name="name" type="varchar(255)"/>
-            <column name="url" type="varchar(255)"/>
-            <column name="datetime" type="datetime"/>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="datetime" type="datetime">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="groups">
             <column name="id" type="${long_type}">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
-            <column name="name" type="varchar(255)"/>
-            <column name="url" type="varchar(255)"/>
-            <column name="description" type="varchar(2000)"/>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-
 
         <createTable tableName="users">
             <column name="id" type="${long_type}">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
-            <column name="username" type="VARCHAR(50)"/>
-            <column name="password" type="VARCHAR(200)"/>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
     </changeSet>

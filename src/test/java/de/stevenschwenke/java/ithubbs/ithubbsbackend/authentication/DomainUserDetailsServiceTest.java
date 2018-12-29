@@ -9,5 +9,6 @@ class DomainUserDetailsServiceTest {
     @Test
     void encodeMe() {
         System.out.println(new BCryptPasswordEncoder().encode("steven"));
+        // $2a$10$UoSI1GfEiU1MTsqd/NL2Gur2nKU7Yrvxsce0GohoNiv91NcJvNCea
     }
 }

@@ -1,6 +1,8 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,10 +13,15 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
     private LocalDateTime datetime;
 
+    @Size(min = 1, max = 100)
+    @NotNull
     private String name;
 
+    @Size(min = 1, max = 255)
+    @NotNull
     private String url;
 
     public Event() {

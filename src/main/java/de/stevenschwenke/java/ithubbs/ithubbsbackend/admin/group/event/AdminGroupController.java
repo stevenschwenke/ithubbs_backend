@@ -4,9 +4,7 @@ import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +23,17 @@ public class AdminGroupController {
     public ResponseEntity<List<Group>> getAllEvents() {
 
         return new ResponseEntity<>(adminGroupRepository.findAll(), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "")
+    public ResponseEntity<?> createNewGroup(@RequestBody Group group) {
+
+        try {
+            adminGroupRepository.save(group);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

@@ -1,6 +1,8 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.group;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "groups")
@@ -10,10 +12,16 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Size(min = 1, max = 100)
+    @NotNull
     private String name;
 
+    @Size(min = 1, max = 255)
+    @NotNull
     private String url;
 
+    @Size(min = 1, max = 2000)
+    @NotNull
     private String description;
 
     public Group() {
