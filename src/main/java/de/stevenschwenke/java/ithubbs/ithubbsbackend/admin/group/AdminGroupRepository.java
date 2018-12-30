@@ -1,4 +1,4 @@
-package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group.event;
+package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import org.springframework.data.repository.CrudRepository;

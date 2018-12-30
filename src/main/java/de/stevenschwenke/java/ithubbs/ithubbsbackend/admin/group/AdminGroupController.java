@@ -1,4 +1,4 @@
-package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group.event;
+package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,13 @@ import java.util.List;
 public class AdminGroupController {
 
     private final AdminGroupRepository adminGroupRepository;
+    private final AdminGroupService adminGroupService;
 
     @Autowired
-    public AdminGroupController(AdminGroupRepository adminGroupRepository) {
+    public AdminGroupController(AdminGroupRepository adminGroupRepository,
+                                AdminGroupService adminGroupService) {
         this.adminGroupRepository = adminGroupRepository;
+        this.adminGroupService = adminGroupService;
     }
 
     @GetMapping(value = "")
@@ -30,6 +33,19 @@ public class AdminGroupController {
 
         try {
             adminGroupRepository.save(group);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "edit")
+    public ResponseEntity<?> editGroup(@RequestBody Group group) {
+
+        try {
+            adminGroupService.editGroup(group);
+
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
