@@ -16,7 +16,6 @@ client:
 #
 #---
 
-
 ###
 #   Database Settings
 ###
@@ -43,6 +42,15 @@ spring:
       settings:
         trace: false
         web-allow-others: false
+
+---
+
+# Enable Actuator support for Cloudfoundry App Manager
+
+management:
+  cloudfoundry:
+    skip-ssl-validation=true:
+
 ---
 spring:
   profiles: integration
