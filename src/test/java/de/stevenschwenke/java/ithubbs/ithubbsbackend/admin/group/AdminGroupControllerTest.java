@@ -61,4 +61,27 @@ class AdminGroupControllerTest {
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
     }
+
+    @Test
+    void creatingValidGroupDeletionWillReturnHTTP200() {
+
+        AdminGroupController adminGroupController = new AdminGroupController(null, Mockito.mock(AdminGroupService.class));
+
+        ResponseEntity<?> response = adminGroupController.deleteGroup(new Group());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void creatingInvalidGroupDeletionWillReturnHTTP422() {
+
+        AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
+        Mockito.doThrow(IllegalArgumentException.class).when(adminGroupServiceMock).deleteGroup(any());
+
+        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+
+        ResponseEntity<?> response = adminGroupController.deleteGroup(new Group());
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+    }
 }

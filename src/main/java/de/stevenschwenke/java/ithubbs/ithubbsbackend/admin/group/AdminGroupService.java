@@ -7,4 +7,6 @@ import org.springframework.stereotype.Service;
 public interface AdminGroupService {
 
     void editGroup(Group newValue);
+
+    void deleteGroup(Group newValue);
 }

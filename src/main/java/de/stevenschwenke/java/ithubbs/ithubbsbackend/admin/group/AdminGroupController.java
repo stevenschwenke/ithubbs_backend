@@ -52,4 +52,17 @@ public class AdminGroupController {
 
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "delete")
+    public ResponseEntity<?> deleteGroup(@RequestBody Group group) {
+
+        try {
+            adminGroupService.deleteGroup(group);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

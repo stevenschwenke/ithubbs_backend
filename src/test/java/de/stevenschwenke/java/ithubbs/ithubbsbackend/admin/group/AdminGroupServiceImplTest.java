@@ -65,4 +65,30 @@ class AdminGroupServiceImplTest {
         assertEquals("new url", reloadedGroupOptional.get().getUrl());
         assertEquals("new description", reloadedGroupOptional.get().getDescription());
     }
+
+    @Test
+    void deleteNotExistingGroupWillThrowException() {
+
+        Group validGroup = new Group(null, null, null);
+
+        assertThrows(ConstraintViolationException.class, () -> {
+            adminGroupService.deleteGroup(validGroup);
+            groupRepository.findAll();
+        });
+    }
+
+
+    @Test
+    void deleteExistingGroupWillDeleteGroup() {
+
+        assertTrue(groupRepository.findAll().isEmpty());
+
+        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+
+        assertEquals(1, groupRepository.count());
+
+        adminGroupService.deleteGroup(savedGroup);
+
+        assertEquals(0, groupRepository.count());
+    }
 }

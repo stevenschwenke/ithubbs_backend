@@ -25,4 +25,10 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         changedGroup.setDescription(newValue.getDescription());
         adminGroupRepository.save(newValue);
     }
+
+    @Override
+    public void deleteGroup(Group group) {
+
+        adminGroupRepository.delete(group);
+    }
 }
