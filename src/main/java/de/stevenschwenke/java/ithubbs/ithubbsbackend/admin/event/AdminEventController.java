@@ -1,5 +1,6 @@
-package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
+package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event;
 
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,19 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/events")
-public class EventController {
+@RequestMapping("/api/admin/events")
+public class AdminEventController {
 
-    private final EventRepository eventRepository;
+    private final AdminEventRepository adminEventRepository;
 
     @Autowired
-    public EventController(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+    public AdminEventController(AdminEventRepository adminEventRepository) {
+        this.adminEventRepository = adminEventRepository;
     }
 
     @GetMapping(value = "")
     public ResponseEntity<List<Event>> getAllEvents() {
 
-        return new ResponseEntity<>(eventRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(adminEventRepository.findAll(), HttpStatus.OK);
     }
 }

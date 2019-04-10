@@ -1,4 +1,4 @@
-package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
+package de.stevenschwenke.java.ithubbs.ithubbsbackend.group;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/events")
-public class EventController {
+@RequestMapping("/api/groups")
+public class GroupController {
 
-    private final EventRepository eventRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public EventController(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+    public GroupController(GroupRepository groupRepository) {
+        this.groupRepository = groupRepository;
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<List<Event>> getAllEvents() {
+    public ResponseEntity<List<Group>> getAllGroups() {
 
-        return new ResponseEntity<>(eventRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepository.findAll(), HttpStatus.OK);
     }
 }

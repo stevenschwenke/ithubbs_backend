@@ -1,20 +1,16 @@
-package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
+package de.stevenschwenke.java.ithubbs.ithubbsbackend.group;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "events")
-public class Event {
+@Table(name = "groups")
+public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @NotNull
-    private LocalDateTime datetime;
 
     @Size(min = 1, max = 100)
     @NotNull
@@ -24,21 +20,17 @@ public class Event {
     @NotNull
     private String url;
 
-    public Event() {
+    @Size(min = 1, max = 2000)
+    @NotNull
+    private String description;
+
+    public Group() {
     }
 
-    public Event(LocalDateTime date, String name, String url) {
-        this.datetime = date;
+    public Group(String name, String url, String description) {
         this.name = name;
         this.url = url;
-    }
-
-    public LocalDateTime getDate() {
-        return datetime;
-    }
-
-    public void setDate(LocalDateTime datetime) {
-        this.datetime = datetime;
+        this.description = description;
     }
 
     public Long getId() {
@@ -63,5 +55,13 @@ public class Event {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
