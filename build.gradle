@@ -50,11 +50,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-springBoot  {
-    buildInfo()
-}
-
-bootJar {
-    mainClassName = 'de.stevenschwenke.java.ithubbs.ithubbsbackend.IthubbsbackendApplication'
-}

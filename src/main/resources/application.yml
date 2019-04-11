@@ -45,13 +45,6 @@ spring:
 
 ---
 
-# Enable Actuator support for Cloudfoundry App Manager
-
-management:
-  cloudfoundry:
-    skip-ssl-validation=true:
-
----
 spring:
   profiles: integration
   jpa:

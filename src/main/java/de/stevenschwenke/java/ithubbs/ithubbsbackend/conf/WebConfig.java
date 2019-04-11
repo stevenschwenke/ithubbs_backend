@@ -1,9 +1,14 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.conf;
 
+import org.apache.catalina.Host;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -13,6 +18,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.*;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,5 +58,44 @@ public class WebConfig implements WebMvcConfigurer {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public TomcatServletWebServerFactory servletWebServerFactory() {
+        return new TomcatServletWebServerFactory() {
+
+            @Override
+            protected void prepareContext(Host host,
+                                          ServletContextInitializer[] initializers) {
+                super.prepareContext(host, initializers);
+                StandardContext child = new StandardContext();
+                child.addLifecycleListener(new Tomcat.FixContextListener());
+                child.setPath("/cloudfoundryapplication");
+                ServletContainerInitializer initializer = getServletContextInitializer(
+                        getContextPath());
+                child.addServletContainerInitializer(initializer, Collections.emptySet());
+                child.setCrossContext(true);
+                host.addChild(child);
+            }
+
+        };
+    }
+
+    private ServletContainerInitializer getServletContextInitializer(String contextPath) {
+        return (c, context) -> {
+            Servlet servlet = new GenericServlet() {
+
+                @Override
+                public void service(ServletRequest req, ServletResponse res)
+                        throws ServletException, IOException {
+                    ServletContext context = req.getServletContext()
+                            .getContext(contextPath);
+                    context.getRequestDispatcher("/cloudfoundryapplication").forward(req,
+                            res);
+                }
+
+            };
+            context.addServlet("cloudfoundry", servlet).addMapping("/*");
+        };
     }
 }
