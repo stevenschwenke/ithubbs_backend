@@ -6,7 +6,7 @@ server:
 client:
   uris:
     local: http://localhost:4200
-    test: https://ithubbstest.cfapps.io
+    test: https://ithubbsfrontend.cfapps.io
 
 ---
 #
@@ -20,7 +20,7 @@ client:
 #   Database Settings
 ###
 spring:
-  profiles: local, junit, default, prod, test
+  profiles: local, junit, default
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
@@ -46,7 +46,7 @@ spring:
 ---
 
 spring:
-  profiles: integration
+  profiles: test
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
