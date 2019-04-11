@@ -60,6 +60,15 @@ public class WebConfig implements WebMvcConfigurer {
         return source;
     }
 
+    /**
+     * This configuration exposes the /cloudfoundryapplication endpoint which is used only by Cloudfoundry to access
+     * the Spring Actuator endpoints. For details
+     * see https://stevenschwenke.de/CloudfoundryNotRecognizingYourAppAsSpringBootUseEmptyContextPath
+     *
+     * This configuration may be removed if the application is deployed under another platform-as-a-service.
+     *
+     * @return
+     */
     @Bean
     public TomcatServletWebServerFactory servletWebServerFactory() {
         return new TomcatServletWebServerFactory() {
