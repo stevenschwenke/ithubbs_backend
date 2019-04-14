@@ -31,13 +31,14 @@ public class AdminGroupController {
     @PostMapping(value = "")
     public ResponseEntity<?> createNewGroup(@RequestBody Group group) {
 
+        Group savedGroup;
         try {
-            adminGroupRepository.save(group);
+            savedGroup = adminGroupRepository.save(group);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(savedGroup.getId(), HttpStatus.OK);
     }
 
     @PostMapping(value = "edit")

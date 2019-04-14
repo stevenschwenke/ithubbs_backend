@@ -27,6 +27,7 @@ class AdminGroupControllerTest {
         ResponseEntity<?> response = adminGroupController.createNewGroup(validGroup);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(validGroup.getId(), response.getBody());
     }
 
     @Test
