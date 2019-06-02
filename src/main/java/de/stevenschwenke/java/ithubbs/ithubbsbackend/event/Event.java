@@ -1,9 +1,11 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "events")
@@ -13,8 +15,9 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     @NotNull
-    private LocalDateTime datetime;
+    private ZonedDateTime datetime;
 
     @Size(min = 1, max = 100)
     @NotNull
@@ -27,17 +30,17 @@ public class Event {
     public Event() {
     }
 
-    public Event(LocalDateTime date, String name, String url) {
-        this.datetime = date;
+    public Event(String name, ZonedDateTime datetime, String url) {
+        this.datetime = datetime;
         this.name = name;
         this.url = url;
     }
 
-    public LocalDateTime getDate() {
+    public ZonedDateTime getDatetime() {
         return datetime;
     }
 
-    public void setDate(LocalDateTime datetime) {
+    public void setDatetime(ZonedDateTime datetime) {
         this.datetime = datetime;
     }
 
