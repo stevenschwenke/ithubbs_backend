@@ -81,7 +81,7 @@ class AdminGroupServiceImplTest {
     @Test
     void deleteExistingGroupWillDeleteGroup() {
 
-        assertTrue(groupRepository.findAll().isEmpty());
+        groupRepository.deleteAll();
 
         Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
 
