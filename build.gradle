@@ -33,7 +33,7 @@ dependencies {
     implementation('io.jsonwebtoken:jjwt-impl:0.10.5')
     implementation('io.jsonwebtoken:jjwt-jackson:0.10.5')
     implementation('org.apache.commons:commons-lang3')
-    implementation('postgresql:postgresql:9.1-901-1.jdbc4')
+    implementation('org.postgresql:postgresql:42.2.4')
 
     implementation('org.springframework.cloud:spring-cloud-spring-service-connector')
     implementation('org.springframework.cloud:spring-cloud-cloudfoundry-connector')

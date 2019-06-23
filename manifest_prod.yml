@@ -1,6 +1,6 @@
 ---
 applications:
-- name: ithubbstest_backend
+- name: ithubbs_backend
   instances: 1
   path: ./build/libs/ithubbsbackend-0.0.1-SNAPSHOT.jar
   buildpack: https://github.com/cloudfoundry/java-buildpack.git

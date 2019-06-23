@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("test")
-public class DatabaseConfigT extends AbstractCloudConfig {
+@Profile({"test", "prod"})
+public class DatabaseConfigTestAndProd extends AbstractCloudConfig {
 
     @Bean
     public DataSource dataSource() {

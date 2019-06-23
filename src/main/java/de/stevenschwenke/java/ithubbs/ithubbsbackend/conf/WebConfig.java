@@ -40,10 +40,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
-        String localURI = environment.getProperty("client.uris.local");
-        String clientURI = environment.getProperty("client.uris.test");
+        String localClientURI = environment.getProperty("client.uris.local");
+        String testClientURI = environment.getProperty("client.uris.test");
+        String prodClientURI = environment.getProperty("client.uris.prod");
 
-        List<String> allowedOrigins = List.of(Objects.requireNonNull(localURI), Objects.requireNonNull(clientURI));
+        List<String> allowedOrigins = List.of(Objects.requireNonNull(localClientURI), Objects.requireNonNull(testClientURI), Objects.requireNonNull(prodClientURI));
         log.info("CORS allowed origins: " + StringUtils.join(allowedOrigins, ", "));
 
         final CorsConfiguration configuration = new CorsConfiguration();

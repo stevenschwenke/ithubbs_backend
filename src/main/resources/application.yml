@@ -6,7 +6,8 @@ server:
 client:
   uris:
     local: http://localhost:4200
-    test: https://ithubbsfrontend.cfapps.io
+    test: https://ithubbstestfrontend.cfapps.io
+    prod: https://ithubbsfrontend.cfapps.io
 
 ---
 #
@@ -46,7 +47,7 @@ spring:
 ---
 
 spring:
-  profiles: test
+  profiles: test, prod
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
