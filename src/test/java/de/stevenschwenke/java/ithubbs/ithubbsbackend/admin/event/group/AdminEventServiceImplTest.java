@@ -33,7 +33,7 @@ class AdminEventServiceImplTest {
 
         assertThrows(InvalidDataAccessApiUsageException.class, () -> {
             adminEventService.editEvent(validEvent);
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
     }
 
@@ -47,7 +47,7 @@ class AdminEventServiceImplTest {
 
         assertThrows(ConstraintViolationException.class, () -> {
             adminEventService.editEvent(validEvent);
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
     }
 
@@ -76,7 +76,7 @@ class AdminEventServiceImplTest {
 
         assertThrows(ConstraintViolationException.class, () -> {
             adminEventService.deleteEvent(validEvent);
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
     }
 

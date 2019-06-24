@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,7 +27,7 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event("name", null, "URL"));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("datetime", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -38,7 +39,7 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event(null, ZonedDateTime.now(), "URL"));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("name", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -50,7 +51,7 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event("", ZonedDateTime.now(), "URL"));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("name", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -62,7 +63,7 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event("Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!", ZonedDateTime.now(), "URL"));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("name", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -74,7 +75,7 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event("name", ZonedDateTime.now(), null));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("url", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -86,7 +87,7 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event("name", ZonedDateTime.now(), ""));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("url", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -98,9 +99,28 @@ class EventRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             eventRepository.save(new Event("name", ZonedDateTime.now(), "Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!"));
-            eventRepository.findAll();
+            eventRepository.findAllByOrderByDatetimeAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("url", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
     }
+
+    @Test
+    void eventsAreOrderedByDatetimeAscending() {
+
+        Event today = new Event("today", ZonedDateTime.now(), "today");
+        Event yesterday = new Event("yesterday", ZonedDateTime.now().minusDays(1), "yesterday");
+        Event tomorrow = new Event("tomorrow", ZonedDateTime.now().plusDays(1), "tomorrow");
+
+        eventRepository.save(today);
+        eventRepository.save(yesterday);
+        eventRepository.save(tomorrow);
+
+        List<Event> events = eventRepository.findAllByOrderByDatetimeAsc();
+
+        assertEquals(yesterday, events.get(0));
+        assertEquals(today, events.get(1));
+        assertEquals(tomorrow, events.get(2));
+    }
+
 }

@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface AdminEventRepository extends CrudRepository<Event, Long> {
 
-    @Override
-    List<Event> findAll();
+    List<Event> findAllByOrderByDatetimeAsc();
 }

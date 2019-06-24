@@ -23,6 +23,6 @@ public class EventController {
     @GetMapping(value = "")
     public ResponseEntity<List<Event>> getAllEvents() {
 
-        return new ResponseEntity<>(eventRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(eventRepository.findAllByOrderByDatetimeAsc(), HttpStatus.OK);
     }
 }

@@ -25,7 +25,7 @@ public class AdminEventController {
     @GetMapping(value = "")
     public ResponseEntity<List<Event>> getAllEvents() {
 
-        return new ResponseEntity<>(adminEventRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(adminEventRepository.findAllByOrderByDatetimeAsc(), HttpStatus.OK);
     }
 
     @PostMapping(value = "")
