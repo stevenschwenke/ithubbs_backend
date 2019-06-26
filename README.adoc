@@ -4,6 +4,16 @@ image:https://travis-ci.org/stevenschwenke/ithubbs_backend.svg?branch=master["Bu
 
 This is the backend to http://www.ithubbs.de[ithubbs.de]
 
+== Run locally
+1. build:
+
+    gradle build
+
+1. run with Java, main class: _de.stevenschwenke.java.ithubbs.ithubbsbackend.IthubbsbackendApplication_
+
+
+1. backend available at localhost:8090
+
 == Setup PCF
 Only once, set "User Provided Environment Variables":
 
