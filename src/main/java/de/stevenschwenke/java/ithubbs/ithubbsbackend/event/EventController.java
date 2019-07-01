@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,6 @@ public class EventController {
     @GetMapping(value = "")
     public ResponseEntity<List<Event>> getAllEvents() {
 
-        return new ResponseEntity<>(eventRepository.findAllByOrderByDatetimeAsc(), HttpStatus.OK);
+        return new ResponseEntity<>(eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now()), HttpStatus.OK);
     }
 }
