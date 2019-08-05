@@ -7,7 +7,7 @@ client:
   uris:
     local: http://localhost:4200
     test: https://ithubbstestfrontend.cfapps.io
-    prod: https://ithubbsfrontend.cfapps.io
+    prod: https://www.ithubbs.de
     legacy: https://ithubbs.cfapps.io
 
 ---
