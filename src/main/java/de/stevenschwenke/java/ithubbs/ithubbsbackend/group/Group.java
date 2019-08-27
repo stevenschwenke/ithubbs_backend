@@ -24,6 +24,9 @@ public class Group {
     @NotNull
     private String description;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private GroupLogo groupLogo;
+
     public Group() {
     }
 
@@ -63,5 +66,13 @@ public class Group {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public GroupLogo getGroupLogo() {
+        return groupLogo;
+    }
+
+    public void setGroupLogo(GroupLogo groupLogo) {
+        this.groupLogo = groupLogo;
     }
 }

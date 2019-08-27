@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="long_type" value="bigint" dbms="postgresql"/>
+    <property name="long_type" value="long" dbms="h2"/>
+    <property name="blob_type" value="bytea" dbms="postgresql"/>
+    <property name="blob_type" value="blob" dbms="h2"/>
+
+    <changeSet id="CreateGroupLogo" author="Steven Schwenke">
+
+        <createTable tableName="grouplogos">
+            <column name="id" type="${long_type}">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="content" type="${blob_type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filename" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addColumn tableName="groups">
+            <column name="group_logo_id" type="${long_type}">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="groups"
+                                 baseColumnNames="group_logo_id"
+                                 constraintName="fk_group_to_grouplogos"
+                                 referencedTableName="grouplogos"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>
