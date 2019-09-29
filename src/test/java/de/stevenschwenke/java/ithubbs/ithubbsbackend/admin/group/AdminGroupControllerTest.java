@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -82,6 +84,31 @@ class AdminGroupControllerTest {
         AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
 
         ResponseEntity<?> response = adminGroupController.deleteGroup(new Group());
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+    }
+
+    @Test
+    void uploadingGroupLogoForExistingGroupWithoutErrorWillReturnHTTP200() {
+
+        AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
+
+        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+
+        ResponseEntity<?> response = adminGroupController.uploadGroupLogo(42L, null);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
+
+    @Test
+    void uploadingGroupLogoForNonExistingGroupWillReturnHTTP422() throws IOException, GroupNotFoundException {
+
+        AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
+        Mockito.doThrow(GroupNotFoundException.class).when(adminGroupServiceMock).uploadGroupLogo(42L, null);
+
+        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+
+        ResponseEntity<?> response = adminGroupController.uploadGroupLogo(42L, null);
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
     }

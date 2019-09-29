@@ -1,15 +1,24 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogoRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +30,8 @@ class AdminGroupServiceImplTest {
 
     @Autowired
     private GroupRepository groupRepository;
+    @Autowired
+    private GroupLogoRepository groupLogoRepository;
     @Autowired
     private AdminGroupServiceImpl adminGroupService;
 
@@ -77,7 +88,6 @@ class AdminGroupServiceImplTest {
         });
     }
 
-
     @Test
     void deleteExistingGroupWillDeleteGroup() {
 
@@ -90,5 +100,79 @@ class AdminGroupServiceImplTest {
         adminGroupService.deleteGroup(savedGroup);
 
         assertEquals(0, groupRepository.count());
+    }
+
+    @Test
+    void uploadGroupLogoForNonExistingGroupWillThrowException() throws URISyntaxException, IOException {
+
+        groupRepository.deleteAll();
+
+        String filename = "spock.jpg";
+        Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
+        byte[] content = Files.readAllBytes(pathOfSpock);
+        String fileType = "image/jpeg";
+
+        GroupNotFoundException exception = assertThrows(GroupNotFoundException.class, () -> {
+            adminGroupService.uploadGroupLogo(42L, new MockMultipartFile(filename, filename, fileType, content));
+        });
+        assertEquals("Group not found.", exception.getMessage());
+    }
+
+    @Test
+    void uploadGroupLogoForExistingGroupWithoutLogoWillSaveLogoToGroup() throws URISyntaxException, IOException, GroupNotFoundException {
+
+        groupLogoRepository.deleteAll();
+
+        groupRepository.deleteAll();
+        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+
+        String filename = "spock.jpg";
+        Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
+        byte[] content = Files.readAllBytes(pathOfSpock);
+        String fileType = "image/jpeg";
+
+        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
+
+        GroupLogo savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
+        assertNotNull(savedGroupLogo);
+        assertArrayEquals(ArrayUtils.toObject(content), savedGroupLogo.getContent());
+        assertEquals("spock.jpg", savedGroupLogo.getFilename());
+    }
+
+    @Test
+    void uploadGroupLogoForExistingGroupWithLogoWillReplaceOldLogo() throws IOException, GroupNotFoundException, URISyntaxException {
+
+        groupLogoRepository.deleteAll();
+
+        groupRepository.deleteAll();
+        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+
+        // Save Logo 1
+
+        String filename = "spock.jpg";
+        Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
+        byte[] content = Files.readAllBytes(pathOfSpock);
+        String fileType = "image/jpeg";
+
+        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
+
+        GroupLogo savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
+        assertNotNull(savedGroupLogo);
+        assertArrayEquals(ArrayUtils.toObject(content), savedGroupLogo.getContent());
+        assertEquals("spock.jpg", savedGroupLogo.getFilename());
+
+        // Save Logo 2
+
+        String filenameZulu = "zulu.jpg";
+        Path pathOfZulu = Paths.get(ClassLoader.getSystemResource(filename).toURI());
+        byte[] contentZulu = Files.readAllBytes(pathOfSpock);
+        String fileTypeZulu = "image/jpeg";
+
+        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filenameZulu, filenameZulu, fileTypeZulu, contentZulu));
+
+        savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
+        assertNotNull(savedGroupLogo);
+        assertArrayEquals(ArrayUtils.toObject(contentZulu), savedGroupLogo.getContent());
+        assertEquals("zulu.jpg", savedGroupLogo.getFilename());
     }
 }
