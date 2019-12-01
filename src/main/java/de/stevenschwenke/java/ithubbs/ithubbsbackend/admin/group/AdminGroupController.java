@@ -21,35 +21,27 @@ public class AdminGroupController {
 
     private final AdminGroupRepository adminGroupRepository;
     private final AdminGroupService adminGroupService;
-    private final GroupLogoRepository groupLogoRepository;
 
     @Autowired
     public AdminGroupController(AdminGroupRepository adminGroupRepository,
-                                AdminGroupService adminGroupService,
-                                GroupLogoRepository groupLogoRepository) {
+                                AdminGroupService adminGroupService) {
         this.adminGroupRepository = adminGroupRepository;
         this.adminGroupService = adminGroupService;
-        this.groupLogoRepository = groupLogoRepository;
     }
 
     @GetMapping(value = "")
     public ResponseEntity<List<Group>> getAllGroup() {
 
-        return new ResponseEntity<>(adminGroupRepository.findAll(), HttpStatus.OK);
+        List<Group> all = adminGroupRepository.findAll();
+
+        for (Group g : all) {
+            g.setImageURI("http://localhost:8090/ithubbs/api/groups/"+g.getId()+"/logo");
+        }
+
+        return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
-    @ResponseBody
-    @GetMapping(value = "/logo/{logoId}")
-    public ResponseEntity<byte[]> handler(@PathVariable("logoId") long logoId) {
 
-        GroupLogo groupLogo = this.groupLogoRepository.findById(logoId).orElseThrow();
-        byte[] content = ArrayUtils.toPrimitive(groupLogo.getContent());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-
-        return new ResponseEntity<>(content, headers, HttpStatus.OK);
-    }
 
     @PostMapping(value = "")
     public ResponseEntity<?> createNewGroup(@RequestBody Group group) {

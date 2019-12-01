@@ -27,6 +27,9 @@ public class Group {
     @OneToOne(cascade = CascadeType.ALL)
     private GroupLogo groupLogo;
 
+    @Transient
+    private String imageURI;
+
     public Group() {
     }
 
@@ -74,5 +77,13 @@ public class Group {
 
     public void setGroupLogo(GroupLogo groupLogo) {
         this.groupLogo = groupLogo;
+    }
+
+    public String getImageURI() {
+        return imageURI;
+    }
+
+    public void setImageURI(String imageURI) {
+        this.imageURI = imageURI;
     }
 }
