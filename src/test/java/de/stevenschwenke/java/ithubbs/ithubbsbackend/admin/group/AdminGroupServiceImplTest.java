@@ -36,6 +36,16 @@ class AdminGroupServiceImplTest {
     private AdminGroupServiceImpl adminGroupService;
 
     @Test
+    void creatingNewGroupWillAddImageURIToReturnedGroup() {
+
+        Group newGroup = new Group("new Group", "url", "description");
+
+        Group savedGroup = adminGroupService.createNewGroup(newGroup);
+
+        assertEquals("http://localhost:8090/ithubbs/api/groups/"+savedGroup.getId()+"/logo", savedGroup.getImageURI());
+    }
+
+    @Test
     void editingNotExistingGroupWillThrowException() {
 
         Group validGroup = new Group(null, null, null);

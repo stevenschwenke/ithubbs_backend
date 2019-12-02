@@ -47,12 +47,12 @@ public class AdminGroupController {
     public ResponseEntity<?> createNewGroup(@RequestBody Group group) {
         Group savedGroup;
         try {
-            savedGroup = adminGroupRepository.save(group);
+            savedGroup = adminGroupService.createNewGroup(group);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity<>(savedGroup.getId(), HttpStatus.OK);
+        return new ResponseEntity<>(savedGroup, HttpStatus.OK);
     }
 
     @PostMapping(value = "logo")

@@ -9,6 +9,8 @@ import java.io.IOException;
 @Service
 public interface AdminGroupService {
 
+    Group createNewGroup(Group group);
+
     void editGroup(Group newValue);
 
     void deleteGroup(Group newValue);

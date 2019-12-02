@@ -8,6 +8,7 @@ import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -30,6 +31,13 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     public AdminGroupServiceImpl(AdminGroupRepository adminGroupRepository, GroupLogoRepository groupLogoRepository) {
         this.adminGroupRepository = adminGroupRepository;
         this.groupLogoRepository = groupLogoRepository;
+    }
+
+    @Override
+    public Group createNewGroup(@RequestBody Group group) {
+        Group savedGroup = adminGroupRepository.save(group);
+        savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/"+savedGroup.getId()+"/logo");
+        return savedGroup;
     }
 
     @Override
