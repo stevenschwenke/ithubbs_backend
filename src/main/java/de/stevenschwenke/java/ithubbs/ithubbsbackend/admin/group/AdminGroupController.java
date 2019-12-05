@@ -1,12 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogoRepository;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +30,11 @@ public class AdminGroupController {
         List<Group> all = adminGroupRepository.findAll();
 
         for (Group g : all) {
-            g.setImageURI("http://localhost:8090/ithubbs/api/groups/"+g.getId()+"/logo");
+            g.setImageURI("http://localhost:8090/ithubbs/api/groups/" + g.getId() + "/logo");
         }
 
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
-
 
 
     @PostMapping(value = "")
@@ -60,28 +54,32 @@ public class AdminGroupController {
             @RequestParam("groupID") Long groupID,
             @RequestParam("file") MultipartFile file) {
 
+        String logoURI;
+
         try {
-            adminGroupService.uploadGroupLogo(groupID, file);
+            logoURI = adminGroupService.uploadGroupLogo(groupID, file);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (GroupNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(logoURI, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "edit")
     public ResponseEntity<?> editGroup(@RequestBody Group group) {
 
+        Group editedGroup;
+
         try {
-            adminGroupService.editGroup(group);
+            editedGroup = adminGroupService.editGroup(group);
 
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(editedGroup, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "delete")

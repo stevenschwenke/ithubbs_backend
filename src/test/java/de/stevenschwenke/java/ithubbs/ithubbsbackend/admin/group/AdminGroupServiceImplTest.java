@@ -42,7 +42,7 @@ class AdminGroupServiceImplTest {
 
         Group savedGroup = adminGroupService.createNewGroup(newGroup);
 
-        assertEquals("http://localhost:8090/ithubbs/api/groups/"+savedGroup.getId()+"/logo", savedGroup.getImageURI());
+        assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", savedGroup.getImageURI());
     }
 
     @Test
@@ -85,6 +85,24 @@ class AdminGroupServiceImplTest {
         assertEquals("new name", reloadedGroupOptional.get().getName());
         assertEquals("new url", reloadedGroupOptional.get().getUrl());
         assertEquals("new description", reloadedGroupOptional.get().getDescription());
+    }
+
+    @Test
+    void editingExistingGroupWithValidDataWillReturnEditedGroupWithLogoInformation() throws IOException, URISyntaxException, GroupNotFoundException {
+
+        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+        String filename = "spock.jpg";
+        Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
+        byte[] content = Files.readAllBytes(pathOfSpock);
+        String fileType = "image/jpeg";
+        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
+
+        Group validGroup = new Group("new name", "new url", "new description");
+        validGroup.setId(savedGroup.getId());
+
+        Group editedGroup = adminGroupService.editGroup(validGroup);
+
+        assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", editedGroup.getImageURI());
     }
 
     @Test
@@ -141,12 +159,13 @@ class AdminGroupServiceImplTest {
         byte[] content = Files.readAllBytes(pathOfSpock);
         String fileType = "image/jpeg";
 
-        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
+        String logoURI = adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
 
         GroupLogo savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
         assertNotNull(savedGroupLogo);
         assertArrayEquals(ArrayUtils.toObject(content), savedGroupLogo.getContent());
         assertEquals("spock.jpg", savedGroupLogo.getFilename());
+        assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", logoURI);
     }
 
     @Test
@@ -178,11 +197,12 @@ class AdminGroupServiceImplTest {
         byte[] contentZulu = Files.readAllBytes(pathOfSpock);
         String fileTypeZulu = "image/jpeg";
 
-        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filenameZulu, filenameZulu, fileTypeZulu, contentZulu));
+        String logoURI = adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filenameZulu, filenameZulu, fileTypeZulu, contentZulu));
 
         savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
         assertNotNull(savedGroupLogo);
         assertArrayEquals(ArrayUtils.toObject(contentZulu), savedGroupLogo.getContent());
         assertEquals("zulu.jpg", savedGroupLogo.getFilename());
+        assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", logoURI);
     }
 }

@@ -36,18 +36,22 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     @Override
     public Group createNewGroup(@RequestBody Group group) {
         Group savedGroup = adminGroupRepository.save(group);
-        savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/"+savedGroup.getId()+"/logo");
+        savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
         return savedGroup;
     }
 
     @Override
-    public void editGroup(Group newValue) {
+    public Group editGroup(Group newValue) {
 
         Group changedGroup = adminGroupRepository.findById(newValue.getId()).orElseThrow();
         changedGroup.setName(newValue.getName());
         changedGroup.setUrl(newValue.getUrl());
         changedGroup.setDescription(newValue.getDescription());
-        adminGroupRepository.save(newValue);
+        Group savedGroup = adminGroupRepository.save(newValue);
+
+        savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
+
+        return savedGroup;
     }
 
     @Override
@@ -57,13 +61,15 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     }
 
     @Override
-    public void uploadGroupLogo(Long groupID, MultipartFile file) throws IOException, GroupNotFoundException {
+    public String uploadGroupLogo(Long groupID, MultipartFile file) throws IOException, GroupNotFoundException {
 
         Group group = adminGroupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException("Group not found."));
 
         String originalFilename = file.getOriginalFilename();
         Path fileAsPath = multipartFileToPath(file);
         saveLogo(fileAsPath, originalFilename, group);
+
+        return "http://localhost:8090/ithubbs/api/groups/" + groupID + "/logo";
     }
 
     public void saveLogo(Path fileAsPath, String originalFilename, Group group) throws IOException {

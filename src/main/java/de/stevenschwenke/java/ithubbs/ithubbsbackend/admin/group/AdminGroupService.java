@@ -11,9 +11,9 @@ public interface AdminGroupService {
 
     Group createNewGroup(Group group);
 
-    void editGroup(Group newValue);
+    Group editGroup(Group newValue);
 
     void deleteGroup(Group newValue);
 
-    void uploadGroupLogo(Long groupID, MultipartFile file) throws IOException, GroupNotFoundException;
+    String uploadGroupLogo(Long groupID, MultipartFile file) throws IOException, GroupNotFoundException;
 }

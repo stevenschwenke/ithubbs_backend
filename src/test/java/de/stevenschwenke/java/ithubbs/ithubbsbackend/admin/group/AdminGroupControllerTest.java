@@ -29,7 +29,7 @@ class AdminGroupControllerTest {
         ResponseEntity<?> response = adminGroupController.createNewGroup(validGroup);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(validGroup.getId(), response.getBody());
+        assertEquals(validGroup, response.getBody());
     }
 
     @Test
@@ -45,11 +45,14 @@ class AdminGroupControllerTest {
     @Test
     void creatingValidGroupEditWillReturnHTTP200() {
 
-        AdminGroupController adminGroupController = new AdminGroupController(null, Mockito.mock(AdminGroupService.class));
+        Group savedGroup = new Group("name", "url", "description");
+        ResponseEntity<?> response = adminGroupController.createNewGroup(savedGroup);
+        Group returnedGroup = (Group) response.getBody();
 
-        ResponseEntity<?> response = adminGroupController.editGroup(new Group());
+        ResponseEntity<?> response2 = adminGroupController.editGroup(returnedGroup);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response2.getStatusCode());
+        assertEquals(returnedGroup, response.getBody());
     }
 
     @Test
