@@ -27,16 +27,16 @@ public class GroupController {
     @GetMapping(value = "")
     public ResponseEntity<List<GroupModel>> getAllGroups() {
 
-        List<GroupModel> collect = groupRepository.findAll().stream().map((group) -> {
+        List<GroupModel> groupModels = groupRepository.findAll().stream().map((group) -> {
 
             GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(group);
-            URI uri2 = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(group.getId())).toUri();
-            groupModel.setImageURI(uri2);
+            URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(group.getId())).toUri();
+            groupModel.setImageURI(imageURI);
 
             return groupModel;
         }).collect(Collectors.toList());
 
-        return new ResponseEntity<>(collect, HttpStatus.OK);
+        return new ResponseEntity<>(groupModels, HttpStatus.OK);
     }
 
     @ResponseBody

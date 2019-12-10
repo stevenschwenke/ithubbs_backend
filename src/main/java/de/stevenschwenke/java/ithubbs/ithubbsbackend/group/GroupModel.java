@@ -6,6 +6,7 @@ import java.net.URI;
 
 public class GroupModel extends RepresentationModel<GroupModel> {
 
+    private Long id;
     private String name;
     private String url;
     private String description;
@@ -42,5 +43,13 @@ public class GroupModel extends RepresentationModel<GroupModel> {
 
     public void setImageURI(URI imageURI) {
         this.imageURI = imageURI;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

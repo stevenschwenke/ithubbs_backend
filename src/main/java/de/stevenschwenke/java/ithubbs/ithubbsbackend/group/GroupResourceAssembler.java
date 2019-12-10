@@ -11,6 +11,7 @@ public class GroupResourceAssembler extends RepresentationModelAssemblerSupport<
     @Override
     public GroupModel toModel(Group entity) {
         GroupModel gr = super.createModelWithId(entity.getId(), entity);
+        gr.setId(entity.getId());
         gr.setName(entity.getName());
         gr.setUrl(entity.getUrl());
         gr.setDescription(entity.getDescription());
