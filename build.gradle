@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.2.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -28,6 +28,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-hateoas')
     implementation('org.liquibase:liquibase-core')
     implementation('io.jsonwebtoken:jjwt-api:0.10.5')
     implementation('io.jsonwebtoken:jjwt-impl:0.10.5')

@@ -61,7 +61,7 @@ class AdminGroupControllerTest {
         AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
         Mockito.doThrow(IllegalArgumentException.class).when(adminGroupServiceMock).editGroup(any());
 
-        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+        AdminGroupController adminGroupController = new AdminGroupController(adminGroupServiceMock);
 
         ResponseEntity<?> response = adminGroupController.editGroup(new Group());
 
@@ -71,7 +71,7 @@ class AdminGroupControllerTest {
     @Test
     void creatingValidGroupDeletionWillReturnHTTP200() {
 
-        AdminGroupController adminGroupController = new AdminGroupController(null, Mockito.mock(AdminGroupService.class));
+        AdminGroupController adminGroupController = new AdminGroupController(Mockito.mock(AdminGroupService.class));
 
         ResponseEntity<?> response = adminGroupController.deleteGroup(new Group());
 
@@ -84,7 +84,7 @@ class AdminGroupControllerTest {
         AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
         Mockito.doThrow(IllegalArgumentException.class).when(adminGroupServiceMock).deleteGroup(any());
 
-        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+        AdminGroupController adminGroupController = new AdminGroupController(adminGroupServiceMock);
 
         ResponseEntity<?> response = adminGroupController.deleteGroup(new Group());
 
@@ -96,7 +96,7 @@ class AdminGroupControllerTest {
 
         AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
 
-        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+        AdminGroupController adminGroupController = new AdminGroupController(adminGroupServiceMock);
 
         ResponseEntity<?> response = adminGroupController.uploadGroupLogo(42L, null);
 
@@ -109,7 +109,7 @@ class AdminGroupControllerTest {
         AdminGroupService adminGroupServiceMock = Mockito.mock(AdminGroupService.class);
         Mockito.doThrow(GroupNotFoundException.class).when(adminGroupServiceMock).uploadGroupLogo(42L, null);
 
-        AdminGroupController adminGroupController = new AdminGroupController(null, adminGroupServiceMock);
+        AdminGroupController adminGroupController = new AdminGroupController(adminGroupServiceMock);
 
         ResponseEntity<?> response = adminGroupController.uploadGroupLogo(42L, null);
 

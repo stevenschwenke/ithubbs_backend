@@ -8,34 +8,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/groups")
 public class AdminGroupController {
 
-    private final AdminGroupRepository adminGroupRepository;
     private final AdminGroupService adminGroupService;
 
     @Autowired
-    public AdminGroupController(AdminGroupRepository adminGroupRepository,
-                                AdminGroupService adminGroupService) {
-        this.adminGroupRepository = adminGroupRepository;
+    public AdminGroupController(AdminGroupService adminGroupService) {
         this.adminGroupService = adminGroupService;
     }
-
-    @GetMapping(value = "")
-    public ResponseEntity<List<Group>> getAllGroup() {
-
-        List<Group> all = adminGroupRepository.findAll();
-
-        for (Group g : all) {
-            g.setImageURI("http://localhost:8090/ithubbs/api/groups/" + g.getId() + "/logo");
-        }
-
-        return new ResponseEntity<>(all, HttpStatus.OK);
-    }
-
 
     @PostMapping(value = "")
     public ResponseEntity<?> createNewGroup(@RequestBody Group group) {
