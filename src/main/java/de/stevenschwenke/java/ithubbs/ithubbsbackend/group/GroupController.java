@@ -45,7 +45,7 @@ public class GroupController {
 
         Group group = this.groupRepository.findById(groupId).orElseThrow();
         GroupLogo groupLogo = group.getGroupLogo();
-        byte[] content = ArrayUtils.toPrimitive(groupLogo.getContent());
+        byte[] content = ArrayUtils.toPrimitive((groupLogo != null && groupLogo.getContent() != null) ? groupLogo.getContent() : new Byte[]{});
 
         HttpHeaders headers = new HttpHeaders();
         headers.setCacheControl(CacheControl.noCache().getHeaderValue());
