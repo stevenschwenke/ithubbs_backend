@@ -3,6 +3,8 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.group;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventController;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventService;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,5 +90,10 @@ class AdminEventControllerTest {
         ResponseEntity<?> response = adminEventController.deleteEvent(new Event());
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+    }
+
+    @AfterEach
+    void tearDown(@Autowired EventRepository repository) {
+        repository.deleteAll();
     }
 }

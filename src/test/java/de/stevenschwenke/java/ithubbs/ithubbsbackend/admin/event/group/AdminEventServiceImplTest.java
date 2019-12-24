@@ -3,6 +3,8 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.group;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventServiceImpl;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -92,5 +94,10 @@ class AdminEventServiceImplTest {
         adminEventService.deleteEvent(savedEvent);
 
         assertEquals(0, eventRepository.count());
+    }
+
+    @AfterAll
+    static void afterAll(@Autowired EventRepository repository) {
+        repository.deleteAll();
     }
 }
