@@ -127,15 +127,16 @@ class EventRepositoryTest {
     @Test
     void onlyEventsInTheFutureAreReturned() {
 
-        Event today = new Event("today", ZonedDateTime.now(), "today");
-        Event yesterday = new Event("yesterday", ZonedDateTime.now().minusDays(1), "yesterday");
-        Event tomorrow = new Event("tomorrow", ZonedDateTime.now().plusDays(1), "tomorrow");
+        ZonedDateTime now = ZonedDateTime.now();
+        Event today = new Event("today", now, "today");
+        Event yesterday = new Event("yesterday", now.minusDays(1), "yesterday");
+        Event tomorrow = new Event("tomorrow", now.plusDays(1), "tomorrow");
 
         eventRepository.save(today);
         eventRepository.save(yesterday);
         eventRepository.save(tomorrow);
 
-        List<Event> events = eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
+        List<Event> events = eventRepository.findAllWithDatetimeAfter(now.plusMinutes(1));
 
         assertEquals(1, events.size());
         assertEquals(tomorrow, events.get(0));
