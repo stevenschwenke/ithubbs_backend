@@ -1,6 +1,8 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,5 +86,10 @@ class AdminGroupControllerTest {
         ResponseEntity<?> response = adminGroupController.deleteGroup(new Group());
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+    }
+
+    @AfterEach
+    void tearDown(@Autowired GroupRepository repository) {
+        repository.deleteAll();
     }
 }
