@@ -62,6 +62,36 @@ public class GroupControllerTest {
     }
 
     @Test
+    void requestGroupWithoutImageWillReturnHTTP200AndEmptyImageURI() throws Exception {
+
+        Group group = new Group("groupname", "groupurl", "groupdescription");
+        group.setId(42L);
+        group.setGroupLogo(null);
+        when(groupRepository.findAll()).thenReturn(Collections.singletonList(group));
+
+        this.mockMvc.perform(get("/api/groups")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0]['imageURI']").isEmpty());
+    }
+
+    @Test
+    void requestGroupWithImageWillReturnHTTP200AndCorrectImageURI() throws Exception {
+
+        Group group = new Group("groupname", "groupurl", "groupdescription");
+        group.setId(42L);
+        group.setGroupLogo(new GroupLogo("filename", "png", new Byte[]{1,1,0}));
+        when(groupRepository.findAll()).thenReturn(Collections.singletonList(group));
+
+        this.mockMvc.perform(get("/api/groups")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0]['imageURI']").value("http://localhost/api/groups/42/logo"));
+    }
+
+    @Test
     void requestGroupLogoForGroupWithExistingLogoWillReturnHTTP200AndLogoAsContent() throws Exception {
 
         Group group = new Group("groupname", "groupurl", "groupdescription");

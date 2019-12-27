@@ -30,8 +30,10 @@ public class GroupController {
         List<GroupModel> groupModels = groupRepository.findAll().stream().map((group) -> {
 
             GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(group);
-            URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(group.getId())).toUri();
-            groupModel.setImageURI(imageURI);
+            if (group.getGroupLogo() != null) {
+                URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(group.getId())).toUri();
+                groupModel.setImageURI(imageURI);
+            }
 
             return groupModel;
         }).collect(Collectors.toList());
