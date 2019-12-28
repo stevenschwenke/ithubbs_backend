@@ -11,4 +11,6 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
     @Query("select e from Event e where e.datetime >= :datetime order by e.datetime asc ")
     List<Event> findAllWithDatetimeAfter(@Param("datetime") ZonedDateTime datetime);
+
+    List<Event> findAllByOrderByDatetimeAsc();
 }

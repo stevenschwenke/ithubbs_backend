@@ -1,7 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.group;
 
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class AdminEventRepositoryTest {
 
     @Autowired
-    AdminEventRepository eventRepository;
+    EventRepository eventRepository;
 
     @Test
     void persistingEventWithNullNameThrowsException() {

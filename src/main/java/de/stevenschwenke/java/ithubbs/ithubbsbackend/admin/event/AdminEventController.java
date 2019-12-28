@@ -1,6 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +13,20 @@ import java.util.List;
 @RequestMapping("/api/admin/events")
 public class AdminEventController {
 
-    private final AdminEventRepository adminEventRepository;
+    private final EventRepository eventRepository;
     private final AdminEventService adminEventService;
 
     @Autowired
-    public AdminEventController(AdminEventRepository adminEventRepository,
+    public AdminEventController(EventRepository eventRepository,
                                 AdminEventService adminEventService) {
-        this.adminEventRepository = adminEventRepository;
+        this.eventRepository = eventRepository;
         this.adminEventService = adminEventService;
     }
 
     @GetMapping(value = "")
     public ResponseEntity<List<Event>> getAllEvents() {
 
-        return new ResponseEntity<>(adminEventRepository.findAllByOrderByDatetimeAsc(), HttpStatus.OK);
+        return new ResponseEntity<>(eventRepository.findAllByOrderByDatetimeAsc(), HttpStatus.OK);
     }
 
     @PostMapping(value = "")
@@ -34,7 +35,7 @@ public class AdminEventController {
         Event savedEvent;
         try {
 
-            savedEvent = adminEventRepository.save(event);
+            savedEvent = eventRepository.save(event);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }

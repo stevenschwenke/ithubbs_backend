@@ -3,6 +3,7 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogoRepository;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +22,21 @@ import java.util.Objects;
 @Transactional
 public class AdminGroupServiceImpl implements AdminGroupService {
 
-    private final AdminGroupRepository adminGroupRepository;
+    private final GroupRepository groupRepository;
 
     private final GroupLogoRepository groupLogoRepository;
 
     private final Tika tika = new Tika();
 
     @Autowired
-    public AdminGroupServiceImpl(AdminGroupRepository adminGroupRepository, GroupLogoRepository groupLogoRepository) {
-        this.adminGroupRepository = adminGroupRepository;
+    public AdminGroupServiceImpl(GroupRepository groupRepository, GroupLogoRepository groupLogoRepository) {
+        this.groupRepository = groupRepository;
         this.groupLogoRepository = groupLogoRepository;
     }
 
     @Override
     public Group createNewGroup(@RequestBody Group group) {
-        Group savedGroup = adminGroupRepository.save(group);
+        Group savedGroup = groupRepository.save(group);
         savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
         return savedGroup;
     }
@@ -43,11 +44,11 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     @Override
     public Group editGroup(Group newValue) {
 
-        Group changedGroup = adminGroupRepository.findById(newValue.getId()).orElseThrow();
+        Group changedGroup = groupRepository.findById(newValue.getId()).orElseThrow();
         changedGroup.setName(newValue.getName());
         changedGroup.setUrl(newValue.getUrl());
         changedGroup.setDescription(newValue.getDescription());
-        Group savedGroup = adminGroupRepository.save(newValue);
+        Group savedGroup = groupRepository.save(newValue);
 
         savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
 
@@ -57,13 +58,13 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     @Override
     public void deleteGroup(Group group) {
 
-        adminGroupRepository.delete(group);
+        groupRepository.delete(group);
     }
 
     @Override
     public String uploadGroupLogo(Long groupID, MultipartFile file) throws IOException, GroupNotFoundException {
 
-        Group group = adminGroupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException("Group not found."));
+        Group group = groupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException("Group not found."));
 
         String originalFilename = file.getOriginalFilename();
         Path fileAsPath = multipartFileToPath(file);
@@ -75,7 +76,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     public void saveLogo(Path fileAsPath, String originalFilename, Group group) throws IOException {
         GroupLogo groupLogo = groupLogoRepository.save(new GroupLogo(originalFilename, tika.detect(fileAsPath), ArrayUtils.toObject(Files.readAllBytes(fileAsPath))));
         group.setGroupLogo(groupLogo);
-        this.adminGroupRepository.save(group);
+        this.groupRepository.save(group);
     }
 
     static Path multipartFileToPath(MultipartFile multipartFile) throws IOException {
