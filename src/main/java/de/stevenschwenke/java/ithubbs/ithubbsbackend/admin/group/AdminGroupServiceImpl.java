@@ -48,7 +48,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         changedGroup.setName(newValue.getName());
         changedGroup.setUrl(newValue.getUrl());
         changedGroup.setDescription(newValue.getDescription());
-        Group savedGroup = groupRepository.save(newValue);
+        Group savedGroup = groupRepository.save(changedGroup);
 
         savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
 
