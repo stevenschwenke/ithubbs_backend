@@ -68,6 +68,9 @@ public class AdminGroupServiceImpl implements AdminGroupService {
 
         String originalFilename = file.getOriginalFilename();
         Path fileAsPath = multipartFileToPath(file);
+        if(group.getGroupLogo() != null) {
+            groupLogoRepository.delete(group.getGroupLogo());
+        }
         saveLogo(fileAsPath, originalFilename, group);
 
         return "http://localhost:8090/ithubbs/api/groups/" + groupID + "/logo";

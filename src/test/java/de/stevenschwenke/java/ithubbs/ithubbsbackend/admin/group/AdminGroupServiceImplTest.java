@@ -210,6 +210,7 @@ class AdminGroupServiceImplTest {
         groupLogoRepository.deleteAll();
 
         groupRepository.deleteAll();
+        assertEquals(0, groupLogoRepository.count());
         Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
 
         // Save Logo 1
@@ -221,6 +222,7 @@ class AdminGroupServiceImplTest {
 
         adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
 
+        assertEquals(1, groupLogoRepository.count());
         GroupLogo savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
         assertNotNull(savedGroupLogo);
         assertArrayEquals(ArrayUtils.toObject(content), savedGroupLogo.getContent());
@@ -235,6 +237,7 @@ class AdminGroupServiceImplTest {
 
         String logoURI = adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filenameZulu, filenameZulu, fileTypeZulu, contentZulu));
 
+        assertEquals(1, groupLogoRepository.count());
         savedGroupLogo = groupRepository.findById(savedGroup.getId()).orElseThrow().getGroupLogo();
         assertNotNull(savedGroupLogo);
         assertArrayEquals(ArrayUtils.toObject(contentZulu), savedGroupLogo.getContent());
