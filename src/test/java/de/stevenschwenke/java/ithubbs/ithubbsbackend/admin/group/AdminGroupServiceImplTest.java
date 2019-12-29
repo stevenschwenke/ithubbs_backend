@@ -105,18 +105,7 @@ class AdminGroupServiceImplTest {
         assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", editedGroup.getImageURI());
     }
 
-    @Test
-    void deleteNotExistingGroupWillThrowException() {
-
-        Group validGroup = new Group(null, null, null);
-
-        assertThrows(ConstraintViolationException.class, () -> {
-            adminGroupService.deleteGroup(validGroup);
-            groupRepository.findAll();
-        });
-    }
-
-    @Test
+        @Test
     void deleteExistingGroupWillDeleteGroup() {
 
         groupRepository.deleteAll();
