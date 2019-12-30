@@ -36,13 +36,13 @@ class AdminGroupServiceImplTest {
     private AdminGroupServiceImpl adminGroupService;
 
     @Test
-    void creatingNewGroupWillAddImageURIToReturnedGroup() {
+    void creatingNewGroupWillNotAddImageURIToReturnedGroupBecauseNoLogoExists() {
 
         Group newGroup = new Group("new Group", "url", "description");
 
         Group savedGroup = adminGroupService.createNewGroup(newGroup);
 
-        assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", savedGroup.getImageURI());
+        assertNull(savedGroup.getImageURI());
     }
 
     @Test
@@ -88,7 +88,20 @@ class AdminGroupServiceImplTest {
     }
 
     @Test
-    void editingExistingGroupWithValidDataWillReturnEditedGroupWithLogoInformation() throws IOException, URISyntaxException, GroupNotFoundException {
+    void editingExistingGroupWithValidDataWillReturnEditedGroupWithoutLogoInformationIfLogoDoesntExists() {
+
+        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+
+        Group validGroup = new Group("new name", "new url", "new description");
+        validGroup.setId(savedGroup.getId());
+
+        Group editedGroup = adminGroupService.editGroup(validGroup);
+
+        assertNull(editedGroup.getImageURI());
+    }
+
+    @Test
+    void editingExistingGroupWithValidDataWillReturnEditedGroupWithLogoInformationIfLogoExists() throws IOException, URISyntaxException, GroupNotFoundException {
 
         Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
         String filename = "spock.jpg";

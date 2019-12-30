@@ -37,7 +37,9 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     @Override
     public Group createNewGroup(@RequestBody Group group) {
         Group savedGroup = groupRepository.save(group);
-        savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
+        if(savedGroup.getGroupLogo() != null) {
+            savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
+        }
         return savedGroup;
     }
 
@@ -49,8 +51,9 @@ public class AdminGroupServiceImpl implements AdminGroupService {
         changedGroup.setUrl(newValue.getUrl());
         changedGroup.setDescription(newValue.getDescription());
         Group savedGroup = groupRepository.save(changedGroup);
-
-        savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
+        if(savedGroup.getGroupLogo() != null) {
+            savedGroup.setImageURI("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo");
+        }
 
         return savedGroup;
     }
