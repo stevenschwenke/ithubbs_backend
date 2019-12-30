@@ -58,7 +58,7 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     @Override
     public void deleteGroup(Group group) {
 
-        groupRepository.delete(group);
+        groupRepository.deleteById(group.getId());
     }
 
     @Override

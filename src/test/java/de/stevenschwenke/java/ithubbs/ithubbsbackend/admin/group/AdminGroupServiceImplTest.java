@@ -105,18 +105,29 @@ class AdminGroupServiceImplTest {
         assertEquals("http://localhost:8090/ithubbs/api/groups/" + savedGroup.getId() + "/logo", editedGroup.getImageURI());
     }
 
-        @Test
-    void deleteExistingGroupWillDeleteGroup() {
-
+    @Test
+    void deleteExistingGroupWillDeleteGroupAndAssociatedLogo() throws Exception {
         groupRepository.deleteAll();
+        groupLogoRepository.deleteAll();
 
+        String filename = "spock.jpg";
+        Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
+        byte[] content = Files.readAllBytes(pathOfSpock);
+        String fileType = "image/jpeg";
+        GroupLogo groupLogo = new GroupLogo(filename, fileType, ArrayUtils.toObject(content));
+        groupLogoRepository.save(groupLogo);
         Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+        savedGroup.setGroupLogo(groupLogo);
 
         assertEquals(1, groupRepository.count());
+        assertEquals(1, groupLogoRepository.count());
 
-        adminGroupService.deleteGroup(savedGroup);
+        Group groupToDelete = new Group();
+        groupToDelete.setId(savedGroup.getId());
+        adminGroupService.deleteGroup(groupToDelete);
 
         assertEquals(0, groupRepository.count());
+        assertEquals(0, groupLogoRepository.count());
     }
 
     @Test
