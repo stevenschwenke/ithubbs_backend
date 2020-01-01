@@ -46,8 +46,7 @@ public class AdminGroupController {
         } catch (GroupNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
-        return new ResponseEntity<>(logoURI, HttpStatus.CREATED);
+        return new ResponseEntity<>("{\"logoURI\":\""+logoURI+"\"}", HttpStatus.CREATED);
     }
 
     @PostMapping(value = "edit")
