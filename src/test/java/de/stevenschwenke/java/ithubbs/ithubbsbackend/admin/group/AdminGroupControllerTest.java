@@ -50,9 +50,9 @@ class AdminGroupControllerTest {
     @MockBean
     private UserRepository userRepository;
     @Autowired
-    private GroupRepository groupRepository;
+    private GroupRepository groupRepository; // todo mock
     @Autowired
-    private AdminGroupService adminGroupService;
+    private AdminGroupService adminGroupService; // todo mock
 
     @Test
     void creatingValidGroupWithoutProperAuthWillReturnHTTP403() throws Exception {

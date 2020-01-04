@@ -70,17 +70,6 @@ class AdminEventServiceImplTest {
     }
 
     @Test
-    void deleteNotExistingEventWillThrowException() {
-
-        Event validEvent = new Event(null, null, null);
-
-        assertThrows(ConstraintViolationException.class, () -> {
-            adminEventService.deleteEvent(validEvent);
-            eventRepository.findAllByOrderByDatetimeAsc();
-        });
-    }
-
-    @Test
     void deleteExistingEventWillDeleteEvent() {
 
         eventRepository.deleteAll();
