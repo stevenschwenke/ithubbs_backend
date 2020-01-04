@@ -3,9 +3,10 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.authentication.TokenProvider;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.user.User;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.user.UserRepository;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,7 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,10 +51,8 @@ class AdminGroupControllerTest {
     private AuthenticationManager authenticationManager;
     @MockBean
     private UserRepository userRepository;
-    @Autowired
-    private GroupRepository groupRepository; // todo mock
-    @Autowired
-    private AdminGroupService adminGroupService; // todo mock
+    @MockBean
+    private AdminGroupService adminGroupService;
 
     @Test
     void creatingValidGroupWithoutProperAuthWillReturnHTTP403() throws Exception {
@@ -68,12 +68,17 @@ class AdminGroupControllerTest {
     @Test
     void creatingValidGroupWillReturnHTTP200() throws Exception {
 
+        Group requestGroup = new Group("name", "url", "description");
+        Group savedGroup = new Group("name", "url", "description");
+        savedGroup.setId(42L);
+        doReturn(savedGroup).when(adminGroupService).createNewGroup(any());
+
         String jwt = registerUserAndReturnJWT();
 
         this.mockMvc.perform(post("/api/admin/groups")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(new Group("name", "url", "description")))
+                .content(new ObjectMapper().writeValueAsString(requestGroup))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -87,6 +92,8 @@ class AdminGroupControllerTest {
     @Test
     void creatingInvalidGroupWillReturnHTTP422() throws Exception {
 
+        doThrow(RuntimeException.class).when(adminGroupService).createNewGroup(any());
+
         String jwt = registerUserAndReturnJWT();
 
         this.mockMvc.perform(post("/api/admin/groups")
@@ -97,26 +104,26 @@ class AdminGroupControllerTest {
                 .andExpect(status().isUnprocessableEntity());
     }
 
-
     @Test
     void editingExistingGroupWithValidDataWillReturnEditedGroupWithLogoInformation() throws Exception {
 
-        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+        Group requestGroup = new Group("new name", "new url", "new description");
+        requestGroup.setId(42L);
+
+        Group savedGroup = new Group("new name", "new url", "new description");
+        savedGroup.setId(42L);
         String filename = "spock.jpg";
         Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
         byte[] content = Files.readAllBytes(pathOfSpock);
-        String fileType = "image/jpeg";
-        adminGroupService.uploadGroupLogo(savedGroup.getId(), new MockMultipartFile(filename, filename, fileType, content));
-
-        Group validGroup = new Group("new name", "new url", "new description");
-        validGroup.setId(savedGroup.getId());
+        savedGroup.setGroupLogo(new GroupLogo("spock.jpg", "image/jpeg", ArrayUtils.toObject(content)));
+        doReturn(savedGroup).when(adminGroupService).editGroup(any());
 
         String jwt = registerUserAndReturnJWT();
 
         this.mockMvc.perform(post("/api/admin/groups/edit")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(validGroup))
+                .content(new ObjectMapper().writeValueAsString(requestGroup))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -131,7 +138,8 @@ class AdminGroupControllerTest {
     @Test
     void uploadingGroupLogoForExistingGroupWithoutErrorWillReturnHTTP201() throws Exception {
 
-        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+        doNothing().when(adminGroupService).uploadGroupLogo(any(), any());
+
         String filename = "spock.jpg";
         Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
         byte[] content = Files.readAllBytes(pathOfSpock);
@@ -142,7 +150,7 @@ class AdminGroupControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders
                 .multipart("/api/admin/groups/logo")
                 .file(new MockMultipartFile("file", filename, fileType, content))
-                .param("groupID", savedGroup.getId().toString())
+                .param("groupID", "42")
                 .header("Authorization", jwt)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -156,6 +164,8 @@ class AdminGroupControllerTest {
         Path pathOfSpock = Paths.get(ClassLoader.getSystemResource(filename).toURI());
         byte[] content = Files.readAllBytes(pathOfSpock);
         String fileType = "image/jpeg";
+
+        doThrow(GroupNotFoundException.class).when(adminGroupService).uploadGroupLogo(any(), any());
 
         String jwt = registerUserAndReturnJWT();
 
@@ -172,20 +182,22 @@ class AdminGroupControllerTest {
     @Test
     void creatingValidGroupDeletionWillReturnHTTP200() throws Exception {
 
-        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+        doNothing().when(adminGroupService).deleteGroup(any());
 
         String jwt = registerUserAndReturnJWT();
 
         this.mockMvc.perform(delete("/api/admin/groups/delete")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(savedGroup))
+                .content(new ObjectMapper().writeValueAsString(new Group()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void creatingInvalidGroupDeletionWillReturnHTTP422() throws Exception {
+
+        doThrow(RuntimeException.class).when(adminGroupService).deleteGroup(any());
 
         String jwt = registerUserAndReturnJWT();
 
