@@ -27,7 +27,9 @@ public class AdminGroupController {
 
     @PostMapping(value = "")
     public ResponseEntity<?> createNewGroup(@RequestBody Group group) {
+
         GroupModel groupModel;
+
         try {
             Group savedGroup = adminGroupService.createNewGroup(group);
 
@@ -36,6 +38,27 @@ public class AdminGroupController {
                 URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(savedGroup.getId())).toUri();
                 groupModel.setImageURI(imageURI);
             }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return new ResponseEntity<>(groupModel, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "edit")
+    public ResponseEntity<?> editGroup(@RequestBody Group group) {
+
+        GroupModel groupModel;
+
+        try {
+            Group editedGroup = adminGroupService.editGroup(group);
+
+            groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(editedGroup);
+            if (editedGroup.getGroupLogo() != null) {
+                URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(group.getId())).toUri();
+                groupModel.setImageURI(imageURI);
+            }
+
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -58,28 +81,7 @@ public class AdminGroupController {
 
         URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(groupID)).toUri();
 
-        return new ResponseEntity<>("{\"logoURI\":\""+imageURI+"\"}", HttpStatus.CREATED);
-    }
-
-    @PostMapping(value = "edit")
-    public ResponseEntity<?> editGroup(@RequestBody Group group) {
-
-        GroupModel groupModel;
-
-        try {
-            Group editedGroup = adminGroupService.editGroup(group);
-
-            groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(editedGroup);
-            if (group.getGroupLogo() != null) {
-                URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(group.getId())).toUri();
-                groupModel.setImageURI(imageURI);
-            }
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        return new ResponseEntity<>(groupModel, HttpStatus.OK);
+        return new ResponseEntity<>("{\"logoURI\":\"" + imageURI + "\"}", HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "delete")
