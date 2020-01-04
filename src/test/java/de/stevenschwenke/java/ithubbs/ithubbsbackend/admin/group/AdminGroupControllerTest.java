@@ -120,7 +120,7 @@ class AdminGroupControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(post("/api/admin/groups/edit")
+        this.mockMvc.perform(post("/api/admin/groups")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(requestGroup))
@@ -186,7 +186,7 @@ class AdminGroupControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(delete("/api/admin/groups/delete")
+        this.mockMvc.perform(delete("/api/admin/groups")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Group()))
@@ -201,7 +201,7 @@ class AdminGroupControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(delete("/api/admin/groups/delete")
+        this.mockMvc.perform(delete("/api/admin/groups")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Group()))

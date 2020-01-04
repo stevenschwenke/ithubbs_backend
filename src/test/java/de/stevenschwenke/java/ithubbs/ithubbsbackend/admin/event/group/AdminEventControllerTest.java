@@ -130,7 +130,7 @@ class AdminEventControllerTest {
     @Test
     void creatingValidEventEditWithoutProperAuthWillReturnHTTP403() throws Exception {
 
-        this.mockMvc.perform(post("/api/admin/events/edit")
+        this.mockMvc.perform(post("/api/admin/events")
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
@@ -148,15 +148,13 @@ class AdminEventControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(post("/api/admin/events/edit")
+        this.mockMvc.perform(post("/api/admin/events")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
-
-// TODO REsearch: urlTemplates durch Referenz auf Controller statt durch Strings?
 
     @Test
     void creatingInvalidEventEditWillReturnHTTP422() throws Exception {
@@ -167,7 +165,7 @@ class AdminEventControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(post("/api/admin/events/edit")
+        this.mockMvc.perform(post("/api/admin/events")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
@@ -196,7 +194,7 @@ class AdminEventControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(delete("/api/admin/events/delete")
+        this.mockMvc.perform(delete("/api/admin/events")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
@@ -213,7 +211,7 @@ class AdminEventControllerTest {
 
         String jwt = registerUserAndReturnJWT();
 
-        this.mockMvc.perform(delete("/api/admin/events/delete")
+        this.mockMvc.perform(delete("/api/admin/events")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))

@@ -35,37 +35,30 @@ public class AdminEventController {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<?> createNewEvent(@RequestBody Event event) {
-
-        EventModel eventModel;
+    public ResponseEntity<?> createOrUpdate(@RequestBody Event event) {
 
         try {
-            Event savedEvent = eventRepository.save(event);
+            if (event.getId() == null) {
 
-            eventModel = new EventResourceAssembler(this.getClass(), EventModel.class).toModel(savedEvent);
+                // Create
 
+                Event savedEvent = eventRepository.save(event);
+                EventModel eventModel = new EventResourceAssembler(this.getClass(), EventModel.class).toModel(savedEvent);
+                return new ResponseEntity<>(eventModel, HttpStatus.OK);
+
+            } else {
+
+                // Edit
+                adminEventService.editEvent(event);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
-        return new ResponseEntity<>(eventModel, HttpStatus.OK);
     }
 
-    @PostMapping(value = "edit")
-    public ResponseEntity<?> editEvent(@RequestBody Event event) {
-
-        try {
-            adminEventService.editEvent(event);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    // TODO URIs anpassen: "delete" und "edit" sollte nur in Verben stehen, nicht in URI (überall, inklusive frontend)
-    @DeleteMapping(value = "delete")
-    public ResponseEntity<?> deleteEvent(@RequestBody Event event) {
+    @DeleteMapping(value = "")
+    public ResponseEntity<?> delete(@RequestBody Event event) {
 
         try {
             adminEventService.deleteEvent(event);
