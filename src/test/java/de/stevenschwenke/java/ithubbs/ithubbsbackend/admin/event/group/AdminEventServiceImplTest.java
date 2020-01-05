@@ -1,8 +1,8 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.group;
 
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventServiceImpl;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AdminEventServiceImplTest {
 
     @Autowired
-    private AdminEventRepository eventRepository;
+    private EventRepository eventRepository;
     @Autowired
     private AdminEventServiceImpl adminEventService;
 
@@ -67,17 +67,6 @@ class AdminEventServiceImplTest {
         assertEquals("new name", reloadedEventOptional.get().getName());
         assertEquals("new url", reloadedEventOptional.get().getUrl());
         assertEquals(date, reloadedEventOptional.get().getDatetime());
-    }
-
-    @Test
-    void deleteNotExistingEventWillThrowException() {
-
-        Event validEvent = new Event(null, null, null);
-
-        assertThrows(ConstraintViolationException.class, () -> {
-            adminEventService.deleteEvent(validEvent);
-            eventRepository.findAllByOrderByDatetimeAsc();
-        });
     }
 
     @Test

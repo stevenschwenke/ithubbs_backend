@@ -1,92 +1,237 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.group;
 
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventService;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.authentication.TokenProvider;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.user.User;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.user.UserRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("junit")
 class AdminEventControllerTest {
 
     @Autowired
-    private AdminEventController adminEventController;
+    MockMvc mockMvc;
+    @Autowired
+    private TokenProvider tokenProvider;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private EventRepository eventRepository;
+    @MockBean
+    private AdminEventService adminEventService;
 
     @Test
-    void creatingValidEventWillReturnHTTP200() {
+    void gettingAllEventsViaAdminEndpointWithoutProperAuthWillReturnHTTP403() throws Exception {
 
-        Event validGroup = new Event("name", ZonedDateTime.now(), "url");
-
-        ResponseEntity<?> response = adminEventController.createNewEvent(validGroup);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(validGroup.getId(), response.getBody());
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", "my fake JWT")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void creatingInvalidGroupWillReturnHTTP422() {
+    void gettingAllEventsViaAdminEndpointWillReturnEventsAndHTTP200() throws Exception {
 
-        Event emptyInvalidEvent = new Event();
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url");
+        event.setId(42L);
+        doReturn(List.of(event)).when(eventRepository).findAllByOrderByDatetimeAsc();
 
-        ResponseEntity<?> response = adminEventController.createNewEvent(emptyInvalidEvent);
+        String jwt = registerUserAndReturnJWT();
 
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        this.mockMvc.perform(get("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0]['id']").isNumber())
+                .andExpect(jsonPath("$[0]['name']").value("name"))
+                .andExpect(jsonPath("$[0]['url']").value("url"))
+                .andExpect(jsonPath("$[0]['datetime']").value("1577901600.000000000"));
     }
 
     @Test
-    void creatingValidGroupEditWillReturnHTTP200() {
+    void creatingValidEventWithoutProperAuthWillReturnHTTP403() throws Exception {
 
-        AdminEventController adminEventController = new AdminEventController(null, Mockito.mock(AdminEventService.class));
-
-        ResponseEntity<?> response = adminEventController.editEvent(new Event());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", "my fake JWT")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void creatingInvalidEventEditWillReturnHTTP422() {
+    void creatingInvalidEventWillReturnHTTP422() throws Exception {
 
-        AdminEventService adminEventServiceMock = Mockito.mock(AdminEventService.class);
-        Mockito.doThrow(IllegalArgumentException.class).when(adminEventServiceMock).editEvent(any());
+        String jwt = registerUserAndReturnJWT();
 
-        AdminEventController adminEventController = new AdminEventController(null, adminEventServiceMock);
-
-        ResponseEntity<?> response = adminEventController.editEvent(new Event());
-
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new Event()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
-    void creatingValidEventDeletionWillReturnHTTP200() {
+    void creatingValidEventWillReturnHTTP200() throws Exception {
 
-        AdminEventController adminEventController = new AdminEventController(null, Mockito.mock(AdminEventService.class));
+        Event savedEventWithID = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        savedEventWithID.setId(42L);
+        doReturn(savedEventWithID).when(eventRepository).save(any());
 
-        ResponseEntity<?> response = adminEventController.deleteEvent(new Event());
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        String jwt = registerUserAndReturnJWT();
+
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void creatingInvalidEventDeletionWillReturnHTTP422() {
+    void creatingValidEventEditWithoutProperAuthWillReturnHTTP403() throws Exception {
 
-        AdminEventService adminEventServiceMock = Mockito.mock(AdminEventService.class);
-        Mockito.doThrow(IllegalArgumentException.class).when(adminEventServiceMock).deleteEvent(any());
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", "my fake JWT")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
 
-        AdminEventController adminEventController = new AdminEventController(null, adminEventServiceMock);
+    @Test
+    void creatingValidEventEditWillReturnHTTP200() throws Exception {
 
-        ResponseEntity<?> response = adminEventController.deleteEvent(new Event());
+        doNothing().when(adminEventService).editEvent(any());
 
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        event.setId(42L);
+
+        String jwt = registerUserAndReturnJWT();
+
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void creatingInvalidEventEditWillReturnHTTP422() throws Exception {
+
+        doThrow(RuntimeException.class).when(adminEventService).editEvent(any());
+
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+
+        String jwt = registerUserAndReturnJWT();
+
+        this.mockMvc.perform(post("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void creatingValidEventDeletionWithoutProperAuthWillReturnHTTP403() throws Exception {
+
+        this.mockMvc.perform(post("/api/admin/delete")
+                .header("Authorization", "my fake JWT")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void creatingValidEventDeletionWillReturnHTTP200() throws Exception {
+
+        doNothing().when(adminEventService).deleteEvent(any());
+
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        event.setId(42L);
+
+        String jwt = registerUserAndReturnJWT();
+
+        this.mockMvc.perform(delete("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void creatingInvalidEventDeletionWillReturnHTTP422() throws Exception {
+
+        doThrow(RuntimeException.class).when(adminEventService).deleteEvent(any());
+
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+
+        String jwt = registerUserAndReturnJWT();
+
+        this.mockMvc.perform(delete("/api/admin/events")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    /**
+     * @return JSON Web Token for user "steven" with password "steven", which has been registered in Spring Security.
+     */
+    private String registerUserAndReturnJWT() {
+        doReturn(Optional.of(new User("steven", new BCryptPasswordEncoder().encode("steven")))).when(userRepository).findUserByUsername("steven");
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken("steven", "steven", grantedAuthorities);
+
+        Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return tokenProvider.createToken(authentication);
     }
 }

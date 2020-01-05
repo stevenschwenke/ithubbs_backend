@@ -40,6 +40,9 @@ class GroupLogoRepositoryTest {
     @Test
     void savingAGroupWithoutGroupsLogoIsPossible() {
 
+        groupRepository.deleteAll();
+        groupLogoRepository.deleteAll();
+
         assertTrue(groupRepository.findAll().isEmpty());
         assertTrue(groupLogoRepository.findAll().isEmpty());
 
@@ -55,6 +58,9 @@ class GroupLogoRepositoryTest {
 
     @Test
     void savingAGroupSavesTheGroupsLogo() {
+
+        groupRepository.deleteAll();
+        groupLogoRepository.deleteAll();
 
         assertTrue(groupRepository.findAll().isEmpty());
         assertTrue(groupLogoRepository.findAll().isEmpty());

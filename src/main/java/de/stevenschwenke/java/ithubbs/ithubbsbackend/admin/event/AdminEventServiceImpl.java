@@ -1,6 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AdminEventServiceImpl implements AdminEventService {
 
-    private final AdminEventRepository adminEventRepository;
+    private final EventRepository adminEventRepository;
 
     @Autowired
-    public AdminEventServiceImpl(AdminEventRepository adminEventRepository) {
+    public AdminEventServiceImpl(EventRepository adminEventRepository) {
         this.adminEventRepository = adminEventRepository;
     }
 

@@ -1,61 +1,71 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupController;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupModel;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/admin/groups")
 public class AdminGroupController {
 
-    private final AdminGroupRepository adminGroupRepository;
     private final AdminGroupService adminGroupService;
 
     @Autowired
-    public AdminGroupController(AdminGroupRepository adminGroupRepository,
-                                AdminGroupService adminGroupService) {
-        this.adminGroupRepository = adminGroupRepository;
+    public AdminGroupController(AdminGroupService adminGroupService) {
         this.adminGroupService = adminGroupService;
     }
 
-    @GetMapping(value = "")
-    public ResponseEntity<List<Group>> getAllEvents() {
-
-        return new ResponseEntity<>(adminGroupRepository.findAll(), HttpStatus.OK);
-    }
-
     @PostMapping(value = "")
-    public ResponseEntity<?> createNewGroup(@RequestBody Group group) {
+    public ResponseEntity<?> createOrUpdate(@RequestBody Group group) {
 
-        Group savedGroup;
         try {
-            savedGroup = adminGroupRepository.save(group);
+            if (group.getId() == null) {
+
+                Group newGroup = adminGroupService.createNewGroup(group);
+
+                return addLogoAndConvertToResponseEntity(newGroup);
+
+            } else {
+
+                Group editedGroup = adminGroupService.editGroup(group);
+
+                return addLogoAndConvertToResponseEntity(editedGroup);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
-        return new ResponseEntity<>(savedGroup.getId(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "edit")
-    public ResponseEntity<?> editGroup(@RequestBody Group group) {
+    @PostMapping(value = "logo")
+    public ResponseEntity<?> uploadGroupLogo(
+            @RequestParam("groupID") Long groupID,
+            @RequestParam("file") MultipartFile file) {
 
         try {
-            adminGroupService.editGroup(group);
-
-        } catch (Exception e) {
+            adminGroupService.uploadGroupLogo(groupID, file);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (GroupNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(groupID)).toUri();
+
+        return new ResponseEntity<>("{\"logoURI\":\"" + imageURI + "\"}", HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "delete")
-    public ResponseEntity<?> deleteGroup(@RequestBody Group group) {
+    @DeleteMapping(value = "")
+    public ResponseEntity<?> delete(@RequestBody Group group) {
 
         try {
             adminGroupService.deleteGroup(group);
@@ -64,6 +74,18 @@ public class AdminGroupController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> addLogoAndConvertToResponseEntity(Group savedGroup) {
+
+        GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(savedGroup);
+
+        if (savedGroup.getGroupLogo() != null) {
+            URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(savedGroup.getId())).toUri();
+            groupModel.setImageURI(imageURI);
+        }
+
+        return new ResponseEntity<>(groupModel, HttpStatus.OK);
     }
 }
