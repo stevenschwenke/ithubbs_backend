@@ -66,7 +66,7 @@ class AdminEventControllerTest {
     @Test
     void gettingAllEventsViaAdminEndpointWillReturnEventsAndHTTP200() throws Exception {
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url");
         event.setId(42L);
         doReturn(List.of(event)).when(eventRepository).findAllByOrderByDatetimeAsc();
 
