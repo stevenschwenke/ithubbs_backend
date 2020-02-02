@@ -27,13 +27,16 @@ public class Event {
     @NotNull
     private String url;
 
+    private Boolean generalPublic;
+
     public Event() {
     }
 
-    public Event(String name, ZonedDateTime datetime, String url) {
+    public Event(String name, ZonedDateTime datetime, String url, Boolean generalPublic) {
         this.datetime = datetime;
         this.name = name;
         this.url = url;
+        this.generalPublic = generalPublic;
     }
 
     public ZonedDateTime getDatetime() {
@@ -66,5 +69,13 @@ public class Event {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Boolean getGeneralPublic() {
+        return generalPublic;
+    }
+
+    public void setGeneralPublic(Boolean generalPublic) {
+        this.generalPublic = generalPublic;
     }
 }

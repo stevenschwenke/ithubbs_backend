@@ -66,7 +66,7 @@ class AdminEventControllerTest {
     @Test
     void gettingAllEventsViaAdminEndpointWillReturnEventsAndHTTP200() throws Exception {
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url", false);
         event.setId(42L);
         doReturn(List.of(event)).when(eventRepository).findAllByOrderByDatetimeAsc();
 
@@ -90,7 +90,7 @@ class AdminEventControllerTest {
         this.mockMvc.perform(post("/api/admin/events")
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
+                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url", false)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -111,11 +111,11 @@ class AdminEventControllerTest {
     @Test
     void creatingValidEventWillReturnHTTP200() throws Exception {
 
-        Event savedEventWithID = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event savedEventWithID = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
         savedEventWithID.setId(42L);
         doReturn(savedEventWithID).when(eventRepository).save(any());
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
 
         String jwt = registerUserAndReturnJWT();
 
@@ -133,7 +133,7 @@ class AdminEventControllerTest {
         this.mockMvc.perform(post("/api/admin/events")
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
+                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url", false)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -143,7 +143,7 @@ class AdminEventControllerTest {
 
         doNothing().when(adminEventService).editEvent(any());
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
         event.setId(42L);
 
         String jwt = registerUserAndReturnJWT();
@@ -161,7 +161,7 @@ class AdminEventControllerTest {
 
         doThrow(RuntimeException.class).when(adminEventService).editEvent(any());
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
 
         String jwt = registerUserAndReturnJWT();
 
@@ -179,7 +179,7 @@ class AdminEventControllerTest {
         this.mockMvc.perform(post("/api/admin/delete")
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url")))
+                .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url", false)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -189,7 +189,7 @@ class AdminEventControllerTest {
 
         doNothing().when(adminEventService).deleteEvent(any());
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
         event.setId(42L);
 
         String jwt = registerUserAndReturnJWT();
@@ -207,7 +207,7 @@ class AdminEventControllerTest {
 
         doThrow(RuntimeException.class).when(adminEventService).deleteEvent(any());
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url");
+        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
 
         String jwt = registerUserAndReturnJWT();
 

@@ -29,7 +29,7 @@ class AdminEventServiceImplTest {
     @Test
     void editingNotExistingEventWillThrowException() {
 
-        Event validEvent = new Event(null, null, null);
+        Event validEvent = new Event(null, null, null, false);
 
         assertThrows(InvalidDataAccessApiUsageException.class, () -> {
             adminEventService.editEvent(validEvent);
@@ -40,9 +40,9 @@ class AdminEventServiceImplTest {
     @Test
     void editingExistingEventWithInvalidDataWillThrowException() {
 
-        Event savedEvent = eventRepository.save(new Event("name", ZonedDateTime.now(), "url"));
+        Event savedEvent = eventRepository.save(new Event("name", ZonedDateTime.now(), "url", false));
 
-        Event validEvent = new Event(null, null, null);
+        Event validEvent = new Event(null, null, null, false);
         validEvent.setId(savedEvent.getId());
 
         assertThrows(ConstraintViolationException.class, () -> {
@@ -55,9 +55,9 @@ class AdminEventServiceImplTest {
     void editingExistingEventWithValidDataWillChangeData() {
 
         ZonedDateTime date = ZonedDateTime.now();
-        Event savedEvent = eventRepository.save(new Event("name", date, "url"));
+        Event savedEvent = eventRepository.save(new Event("name", date, "url", false));
 
-        Event validEvent = new Event("new name", date, "new url");
+        Event validEvent = new Event("new name", date, "new url", false);
         validEvent.setId(savedEvent.getId());
 
         adminEventService.editEvent(validEvent);
@@ -74,7 +74,7 @@ class AdminEventServiceImplTest {
 
         eventRepository.deleteAll();
 
-        Event savedEvent = eventRepository.save(new Event("name", ZonedDateTime.now(), "url"));
+        Event savedEvent = eventRepository.save(new Event("name", ZonedDateTime.now(), "url", false));
 
         assertEquals(1, eventRepository.count());
 
