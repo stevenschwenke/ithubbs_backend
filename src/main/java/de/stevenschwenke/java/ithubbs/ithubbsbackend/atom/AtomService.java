@@ -46,6 +46,27 @@ public class AtomService {
         return feed;
     }
 
+    public Feed createFeedGeneralPublic() {
+
+        Feed feed = new Feed();
+        feed.setFeedType("atom_1.0");
+        feed.setTitle("IT Hub Braunschweig nicht-technische Veranstaltungen");
+        feed.setId("https://www.ithubbs.de/current");
+
+        Content subtitle = new Content();
+        subtitle.setType("text/plain");
+        subtitle.setValue("Aktuelle nicht-technische IT-Veranstaltungen in Braunschweig");
+        feed.setSubtitle(subtitle);
+
+        feed.setUpdated(new Date());
+
+        Stream<Event> eventStream = eventRepository.findAllGeneralPublic().stream();
+        List<Entry> entries = eventStream.map(this::createEntry).collect(Collectors.toList());
+
+        feed.setEntries(entries);
+        return feed;
+    }
+
     private Entry createEntry(Event event) {
 
         Entry entry = new Entry();

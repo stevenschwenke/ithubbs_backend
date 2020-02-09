@@ -13,4 +13,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     List<Event> findAllWithDatetimeAfter(@Param("datetime") ZonedDateTime datetime);
 
     List<Event> findAllByOrderByDatetimeAsc();
+
+    @Query("select e from Event e where e.generalPublic = true")
+    List<Event> findAllGeneralPublic();
 }

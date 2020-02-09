@@ -26,7 +26,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event("name", null, "URL"));
+            eventRepository.save(new Event("name", null, "URL", false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -38,7 +38,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event(null, ZonedDateTime.now(), "URL"));
+            eventRepository.save(new Event(null, ZonedDateTime.now(), "URL", false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -50,7 +50,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event("", ZonedDateTime.now(), "URL"));
+            eventRepository.save(new Event("", ZonedDateTime.now(), "URL", false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -62,7 +62,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event("Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!", ZonedDateTime.now(), "URL"));
+            eventRepository.save(new Event("Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!", ZonedDateTime.now(), "URL", false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -74,7 +74,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event("name", ZonedDateTime.now(), null));
+            eventRepository.save(new Event("name", ZonedDateTime.now(), null, false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -86,7 +86,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event("name", ZonedDateTime.now(), ""));
+            eventRepository.save(new Event("name", ZonedDateTime.now(), "", false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -98,7 +98,7 @@ class EventRepositoryTest {
 
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
-            eventRepository.save(new Event("name", ZonedDateTime.now(), "Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!"));
+            eventRepository.save(new Event("name", ZonedDateTime.now(), "Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!", false));
             eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
         });
         assertEquals(1, exception.getConstraintViolations().size());
@@ -108,9 +108,9 @@ class EventRepositoryTest {
     @Test
     void eventsAreOrderedByDatetimeAscending() {
 
-        Event tPlus1 = new Event("1", ZonedDateTime.now().plusDays(1), "1");
-        Event tPlus2 = new Event("2", ZonedDateTime.now().plusDays(2), "2");
-        Event tPlus3 = new Event("3", ZonedDateTime.now().plusDays(3), "3");
+        Event tPlus1 = new Event("1", ZonedDateTime.now().plusDays(1), "1", false);
+        Event tPlus2 = new Event("2", ZonedDateTime.now().plusDays(2), "2", false);
+        Event tPlus3 = new Event("3", ZonedDateTime.now().plusDays(3), "3", false);
 
         // saving in random order
         eventRepository.save(tPlus3);
@@ -127,9 +127,9 @@ class EventRepositoryTest {
     @Test
     void onlyEventsInTheFutureAreReturned() {
 
-        Event today = new Event("today", ZonedDateTime.now(), "today");
-        Event yesterday = new Event("yesterday", ZonedDateTime.now().minusDays(1), "yesterday");
-        Event tomorrow = new Event("tomorrow", ZonedDateTime.now().plusDays(1), "tomorrow");
+        Event today = new Event("today", ZonedDateTime.now(), "today", false);
+        Event yesterday = new Event("yesterday", ZonedDateTime.now().minusDays(1), "yesterday", false);
+        Event tomorrow = new Event("tomorrow", ZonedDateTime.now().plusDays(1), "tomorrow", false);
 
         eventRepository.save(today);
         eventRepository.save(yesterday);
@@ -139,5 +139,23 @@ class EventRepositoryTest {
 
         assertEquals(1, events.size());
         assertEquals(tomorrow, events.get(0));
+    }
+
+    @Test
+    void onlyEventsWithTagGeneralPublicAreReturnedWhenSearchingForThem() {
+
+        Event general1 = new Event("general1", ZonedDateTime.now(), "general1", true);
+        Event specific1 = new Event("specific1", ZonedDateTime.now().minusDays(1), "specific1", false);
+        Event general2 = new Event("general2", ZonedDateTime.now().plusDays(1), "general2", true);
+
+        eventRepository.save(general1);
+        eventRepository.save(specific1);
+        eventRepository.save(general2);
+
+        List<Event> events = eventRepository.findAllGeneralPublic();
+
+        assertEquals(2, events.size());
+        assertEquals(general1, events.get(0));
+        assertEquals(general2, events.get(1));
     }
 }

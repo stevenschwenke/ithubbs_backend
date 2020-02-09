@@ -21,4 +21,9 @@ public class AtomController {
     public Feed atom() {
         return atomService.createFeed();
     }
+
+    @GetMapping(path = "/generalPublic")
+    public Feed atomGeneralPublic() {
+        return atomService.createFeedGeneralPublic();
+    }
 }
