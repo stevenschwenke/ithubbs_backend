@@ -30,7 +30,7 @@ class GroupLogoRepositoryTest {
         savedGroup.setGroupLogo(savedGroupLogo);
 
         // "flush"
-        groupRepository.findAll();
+        groupRepository.findAllByOrderByNameAsc();
         groupLogoRepository.findAll();
 
         Group groupReloaded = groupRepository.findById(savedGroup.getId()).orElseThrow();
@@ -43,7 +43,7 @@ class GroupLogoRepositoryTest {
         groupRepository.deleteAll();
         groupLogoRepository.deleteAll();
 
-        assertTrue(groupRepository.findAll().isEmpty());
+        assertTrue(groupRepository.findAllByOrderByNameAsc().isEmpty());
         assertTrue(groupLogoRepository.findAll().isEmpty());
 
         Group group = new Group("name", "url", "description");
@@ -52,7 +52,7 @@ class GroupLogoRepositoryTest {
         Group savedGroup = groupRepository.save(group);
 
         // "flush"
-        groupRepository.findAll();
+        groupRepository.findAllByOrderByNameAsc();
         groupLogoRepository.findAll();
     }
 
@@ -62,7 +62,7 @@ class GroupLogoRepositoryTest {
         groupRepository.deleteAll();
         groupLogoRepository.deleteAll();
 
-        assertTrue(groupRepository.findAll().isEmpty());
+        assertTrue(groupRepository.findAllByOrderByNameAsc().isEmpty());
         assertTrue(groupLogoRepository.findAll().isEmpty());
 
         Group group = new Group("name", "url", "description");
@@ -72,7 +72,7 @@ class GroupLogoRepositoryTest {
         Group savedGroup = groupRepository.save(group);
 
         // "flush"
-        groupRepository.findAll();
+        groupRepository.findAllByOrderByNameAsc();
         groupLogoRepository.findAll();
 
         assertNotNull(savedGroup.getId());

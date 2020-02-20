@@ -10,16 +10,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("junit")
 @Transactional
-class AdminGroupRepositoryTest {
+class GroupRepositoryTest {
 
     @Autowired
     GroupRepository groupRepository;
+
+    @Test
+    void groupsAreReturnedOrderedByName() {
+
+        groupRepository.save(new Group("x", "URL", "Description"));
+        groupRepository.save(new Group("a", "URL", "Description"));
+        groupRepository.save(new Group("b", "URL", "Description"));
+
+        List<Group> allByOrderByNameAsc = groupRepository.findAllByOrderByNameAsc();
+
+        assertEquals("a", allByOrderByNameAsc.get(0).getName());
+        assertEquals("b", allByOrderByNameAsc.get(1).getName());
+        assertEquals("x", allByOrderByNameAsc.get(2).getName());
+    }
 
     @Test
     void persistingGroupWithNullNameThrowsException() {
@@ -27,7 +43,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group(null, "URL", "Description"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("name", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -39,7 +55,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("", "URL", "Description"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("name", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -51,7 +67,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!", "URL", "Description"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("name", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -63,7 +79,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("name", null, "description"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("url", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -75,7 +91,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("name", "", "description"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("url", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -87,7 +103,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("name", "Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!", "description"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("url", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -99,7 +115,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("name", "url", null));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("description", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -111,7 +127,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("name", "url", ""));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("description", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
@@ -123,7 +139,7 @@ class AdminGroupRepositoryTest {
         ConstraintViolationException exception = assertThrows(ConstraintViolationException.class, () -> {
 
             groupRepository.save(new Group("name", "url", "Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name! Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!Way too long name, Way too long name, Way too long name, Way too long   name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name, Way too long name!"));
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
         assertEquals(1, exception.getConstraintViolations().size());
         assertEquals("description", exception.getConstraintViolations().iterator().next().getPropertyPath().toString());
