@@ -27,7 +27,7 @@ public class GroupController {
     @GetMapping(value = "")
     public ResponseEntity<List<GroupModel>> getAllGroups() {
 
-        List<GroupModel> groupModels = groupRepository.findAll().stream().map((group) -> {
+        List<GroupModel> groupModels = groupRepository.findAllByOrderByNameAsc().stream().map((group) -> {
 
             GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(group);
             if (group.getGroupLogo() != null) {

@@ -50,7 +50,7 @@ public class GroupControllerTest {
 
         Group group = new Group("groupname", "groupurl", "groupdescription");
         group.setId(42L);
-        when(groupRepository.findAll()).thenReturn(Collections.singletonList(group));
+        when(groupRepository.findAllByOrderByNameAsc()).thenReturn(Collections.singletonList(group));
 
         this.mockMvc.perform(get("/api/groups")
                 .accept(MediaType.APPLICATION_JSON))
@@ -67,7 +67,7 @@ public class GroupControllerTest {
         Group group = new Group("groupname", "groupurl", "groupdescription");
         group.setId(42L);
         group.setGroupLogo(null);
-        when(groupRepository.findAll()).thenReturn(Collections.singletonList(group));
+        when(groupRepository.findAllByOrderByNameAsc()).thenReturn(Collections.singletonList(group));
 
         this.mockMvc.perform(get("/api/groups")
                 .accept(MediaType.APPLICATION_JSON))
@@ -82,7 +82,7 @@ public class GroupControllerTest {
         Group group = new Group("groupname", "groupurl", "groupdescription");
         group.setId(42L);
         group.setGroupLogo(new GroupLogo("filename", "png", new Byte[]{1,1,0}));
-        when(groupRepository.findAll()).thenReturn(Collections.singletonList(group));
+        when(groupRepository.findAllByOrderByNameAsc()).thenReturn(Collections.singletonList(group));
 
         this.mockMvc.perform(get("/api/groups")
                 .accept(MediaType.APPLICATION_JSON))

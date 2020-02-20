@@ -42,7 +42,7 @@ class AdminGroupServiceImplTest {
 
         assertThrows(InvalidDataAccessApiUsageException.class, () -> {
             adminGroupService.editGroup(validGroup);
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
     }
 
@@ -56,7 +56,7 @@ class AdminGroupServiceImplTest {
 
         assertThrows(ConstraintViolationException.class, () -> {
             adminGroupService.editGroup(validGroup);
-            groupRepository.findAll();
+            groupRepository.findAllByOrderByNameAsc();
         });
     }
 
