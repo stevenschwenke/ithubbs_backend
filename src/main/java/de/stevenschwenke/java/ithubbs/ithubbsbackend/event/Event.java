@@ -1,6 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -28,6 +29,9 @@ public class Event {
     private String url;
 
     private Boolean generalPublic;
+
+    @ManyToOne
+    private Group group;
 
     public Event() {
     }
@@ -77,5 +81,13 @@ public class Event {
 
     public void setGeneralPublic(Boolean generalPublic) {
         this.generalPublic = generalPublic;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
