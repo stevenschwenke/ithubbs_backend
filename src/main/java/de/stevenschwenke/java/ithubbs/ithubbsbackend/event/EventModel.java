@@ -15,6 +15,8 @@ public class EventModel extends RepresentationModel<GroupModel> {
 
     private String url;
 
+    private Boolean generalPublic;
+
     public Long getId() {
         return id;
     }
@@ -45,5 +47,13 @@ public class EventModel extends RepresentationModel<GroupModel> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Boolean getGeneralPublic() {
+        return generalPublic;
+    }
+
+    public void setGeneralPublic(Boolean generalPublic) {
+        this.generalPublic = generalPublic;
     }
 }

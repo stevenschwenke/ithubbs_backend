@@ -18,6 +18,7 @@ public class EventResourceAssembler extends RepresentationModelAssemblerSupport<
         eventModel.setDatetime(entity.getDatetime());
         eventModel.setName(entity.getName());
         eventModel.setUrl(entity.getUrl());
+        eventModel.setGeneralPublic(entity.getGeneralPublic());
 
         if (entity.getGroup() != null) {
             Link linkToGroup = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).getGroup(entity.getGroup().getId())).withRel("group");
