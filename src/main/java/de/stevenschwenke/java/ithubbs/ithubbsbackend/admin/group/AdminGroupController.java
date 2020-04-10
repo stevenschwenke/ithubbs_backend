@@ -81,11 +81,6 @@ public class AdminGroupController {
 
         GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(savedGroup);
 
-        if (savedGroup.getGroupLogo() != null) {
-            URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(savedGroup.getId())).toUri();
-            groupModel.setImageURI(imageURI);
-        }
-
         return new ResponseEntity<>(groupModel, HttpStatus.OK);
     }
 }

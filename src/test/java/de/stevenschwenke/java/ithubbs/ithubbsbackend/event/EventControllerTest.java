@@ -1,6 +1,8 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.authentication.TokenProvider;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -37,13 +40,22 @@ class EventControllerTest {
     private UserRepository userRepository;
     @MockBean
     private EventRepository eventRepository;
+    @MockBean
+    private GroupRepository groupRepository;
 
     @Test
     void gettingAllEventsEvenWithoutAuthWillReturnEventsAndHTTP200() throws Exception {
 
-        Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url", false);
-        event.setId(42L);
-        doReturn(List.of(event)).when(eventRepository).findAllWithDatetimeAfter(any());
+        Group group = new Group("HackTalk", "https://www.hacktalk.de", "Cool community-event in Brunswick");
+        group.setId(41L);
+        Event eventWithGroup = new Event("event with group", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url", false);
+        eventWithGroup.setId(42L);
+        eventWithGroup.setGroup(group);
+        Event eventWithoutGroup = new Event("event without group", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url", false);
+        eventWithoutGroup.setId(43L);
+
+        doReturn(Optional.of(group)).when(groupRepository).findById(41L);
+        doReturn(List.of(eventWithGroup, eventWithoutGroup)).when(eventRepository).findAllWithDatetimeAfter(any());
 
         this.mockMvc.perform(get("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -51,8 +63,13 @@ class EventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$[0]['id']").isNumber())
-                .andExpect(jsonPath("$[0]['name']").value("name"))
+                .andExpect(jsonPath("$[0]['name']").value("event with group"))
                 .andExpect(jsonPath("$[0]['url']").value("url"))
-                .andExpect(jsonPath("$[0]['datetime']").value("1577901600"));
+                .andExpect(jsonPath("$[0]['datetime']").value("1577901600.000000000"))
+                .andExpect(jsonPath("$[0]['links'][?(@.rel=='group')]['href']").value("http://localhost/api/groups/41"))
+                .andExpect(jsonPath("$[1]['id']").isNumber())
+                .andExpect(jsonPath("$[1]['name']").value("event without group"))
+                .andExpect(jsonPath("$[1]['url']").value("url"))
+                .andExpect(jsonPath("$[1]['datetime']").value("1577901600.000000000"));
     }
 }

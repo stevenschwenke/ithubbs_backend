@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,6 +35,30 @@ public class GroupControllerTest {
     private TokenProvider tokenProvider;
     @MockBean
     private GroupRepository groupRepository;
+
+    @Test
+    void requestSpecificGroupWillReturnHTTP200AndEmptyContentIfGroupDoesNotExist() throws Exception {
+
+        this.mockMvc.perform(get("/api/groups/42")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void requestSpecificGroupWillReturnHTTP200AndGroupIfGroupExist() throws Exception {
+
+        Group group = new Group("groupname", "groupurl", "groupdescription");
+        group.setId(42L);
+        when(groupRepository.findById(42L)).thenReturn(Optional.of(group));
+
+        this.mockMvc.perform(get("/api/groups/42")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect( jsonPath("$['name']").value("groupname"))
+                .andExpect( jsonPath("$['url']").value("groupurl"))
+                .andExpect( jsonPath("$['description']").value("groupdescription"));
+    }
 
     @Test
     void requestAllGroupsWillReturnHTTP200AndAllGroups() throws Exception {
@@ -73,7 +98,7 @@ public class GroupControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$[0]['imageURI']").isEmpty());
+                .andExpect(jsonPath("$[0]['links'][?(@.rel=='image')]").isEmpty());
     }
 
     @Test
@@ -88,7 +113,7 @@ public class GroupControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$[0]['imageURI']").value("http://localhost/api/groups/42/logo"));
+                .andExpect(jsonPath("$[0]['links'][?(@.rel=='image')]['href']").value("http://localhost/api/groups/42/logo"));
     }
 
     @Test
