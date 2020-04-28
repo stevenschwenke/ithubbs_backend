@@ -32,15 +32,16 @@ public class AdminGroupController {
             if (group.getId() == null) {
 
                 Group newGroup = adminGroupService.createNewGroup(group);
-
-                return addLogoAndConvertToResponseEntity(newGroup);
+                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(newGroup);
+                return new ResponseEntity<>(groupModel, HttpStatus.CREATED);
 
             } else {
 
                 Group editedGroup = adminGroupService.editGroup(group);
-
-                return addLogoAndConvertToResponseEntity(editedGroup);
+                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(editedGroup);
+                return new ResponseEntity<>(groupModel, HttpStatus.OK);
             }
+
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -74,13 +75,6 @@ public class AdminGroupController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private ResponseEntity<?> addLogoAndConvertToResponseEntity(Group savedGroup) {
-
-        GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(savedGroup);
-
-        return new ResponseEntity<>(groupModel, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

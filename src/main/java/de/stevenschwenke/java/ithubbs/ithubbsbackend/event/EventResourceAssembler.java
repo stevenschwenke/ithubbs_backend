@@ -15,7 +15,7 @@ public class EventResourceAssembler extends RepresentationModelAssemblerSupport<
     public EventModel toModel(Event entity) {
         EventModel eventModel = super.createModelWithId(entity.getId(), entity);
         eventModel.setId(entity.getId());
-        eventModel.setDatetime(entity.getDatetime());
+        eventModel.setDatetime(entity.getDatetime().toEpochSecond());
         eventModel.setName(entity.getName());
         eventModel.setUrl(entity.getUrl());
         eventModel.setGeneralPublic(entity.getGeneralPublic());

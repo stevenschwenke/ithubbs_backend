@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.test.context.ActiveProfiles;
@@ -59,17 +60,17 @@ class EventControllerTest {
 
         this.mockMvc.perform(get("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$[0]['id']").isNumber())
-                .andExpect(jsonPath("$[0]['name']").value("event with group"))
-                .andExpect(jsonPath("$[0]['url']").value("url"))
-                .andExpect(jsonPath("$[0]['datetime']").value("1577901600.000000000"))
-                .andExpect(jsonPath("$[0]['links'][?(@.rel=='group')]['href']").value("http://localhost/api/groups/41"))
-                .andExpect(jsonPath("$[1]['id']").isNumber())
-                .andExpect(jsonPath("$[1]['name']").value("event without group"))
-                .andExpect(jsonPath("$[1]['url']").value("url"))
-                .andExpect(jsonPath("$[1]['datetime']").value("1577901600.000000000"));
+                .andExpect(content().contentType(MediaTypes.HAL_JSON))
+                .andExpect(jsonPath("$._embedded.eventModelList[0].id").isNumber())
+                .andExpect(jsonPath("$._embedded.eventModelList[0].name").value("event with group"))
+                .andExpect(jsonPath("$._embedded.eventModelList[0].url").value("url"))
+                .andExpect(jsonPath("$._embedded.eventModelList[0].datetime").value("1577901600"))
+                .andExpect(jsonPath("$._embedded.eventModelList[0]._links.group.href").value("http://localhost/api/groups/41"))
+                .andExpect(jsonPath("$._embedded.eventModelList[1].id").isNumber())
+                .andExpect(jsonPath("$._embedded.eventModelList[1].name").value("event without group"))
+                .andExpect(jsonPath("$._embedded.eventModelList[1].url").value("url"))
+                .andExpect(jsonPath("$._embedded.eventModelList[1].datetime").value("1577901600"));
     }
 }

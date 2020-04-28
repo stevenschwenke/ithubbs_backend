@@ -1,6 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class EventController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<List<EventModel>> getAllEvents() {
+    public ResponseEntity<CollectionModel<EventModel>> getAllEvents() {
 
         List<EventModel> eventModels = eventRepository
                 .findAllWithDatetimeAfter(ZonedDateTime.now())
@@ -31,6 +32,6 @@ public class EventController {
                 .map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event))
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(eventModels, HttpStatus.OK);
+        return new ResponseEntity<>(new CollectionModel<>(eventModels), HttpStatus.OK);
     }
 }

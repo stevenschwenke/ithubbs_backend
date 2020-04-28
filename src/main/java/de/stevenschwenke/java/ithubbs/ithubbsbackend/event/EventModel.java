@@ -9,7 +9,7 @@ public class EventModel extends RepresentationModel<GroupModel> {
 
     private Long id;
 
-    private ZonedDateTime datetime;
+    private long datetime;
 
     private String name;
 
@@ -25,11 +25,11 @@ public class EventModel extends RepresentationModel<GroupModel> {
         this.id = id;
     }
 
-    public ZonedDateTime getDatetime() {
+    public long getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(ZonedDateTime datetime) {
+    public void setDatetime(long datetime) {
         this.datetime = datetime;
     }
 

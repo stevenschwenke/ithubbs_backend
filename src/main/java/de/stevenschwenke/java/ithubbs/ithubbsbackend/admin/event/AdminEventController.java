@@ -5,6 +5,7 @@ import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventModel;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,11 +28,11 @@ public class AdminEventController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<List<EventModel>> getAllEvents() {
+    public ResponseEntity<CollectionModel<EventModel>> getAllEvents() {
 
         List<EventModel> eventModels = eventRepository.findAllByOrderByDatetimeAsc().stream().map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event)).collect(Collectors.toList());
 
-        return new ResponseEntity<>(eventModels, HttpStatus.OK);
+        return new ResponseEntity<>(new CollectionModel<>(eventModels), HttpStatus.OK);
     }
 
     @PostMapping(value = "")
@@ -44,7 +45,7 @@ public class AdminEventController {
 
                 Event savedEvent = eventRepository.save(event);
                 EventModel eventModel = new EventResourceAssembler(this.getClass(), EventModel.class).toModel(savedEvent);
-                return new ResponseEntity<>(eventModel, HttpStatus.OK);
+                return new ResponseEntity<>(eventModel, HttpStatus.CREATED);
 
             } else {
 
@@ -67,6 +68,6 @@ public class AdminEventController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

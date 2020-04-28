@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -66,7 +67,7 @@ class AdminGroupControllerTest {
     }
 
     @Test
-    void creatingValidGroupWillReturnHTTP200() throws Exception {
+    void creatingValidGroupWillReturnHTTP201() throws Exception {
 
         Group requestGroup = new Group("name", "url", "description");
         Group savedGroup = new Group("name", "url", "description");
@@ -79,9 +80,9 @@ class AdminGroupControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(requestGroup))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
+                .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaTypes.HAL_JSON))
                 .andExpect(jsonPath("$['id']").isNumber())
                 .andExpect(jsonPath("$['name']").value("name"))
                 .andExpect(jsonPath("$['url']").value("url"))
@@ -99,7 +100,7 @@ class AdminGroupControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Group()))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isUnprocessableEntity());
     }
 
@@ -123,19 +124,15 @@ class AdminGroupControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(requestGroup))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
+                .andExpect(content().contentType(MediaTypes.HAL_JSON))
                 .andExpect(jsonPath("$['id']").value("42"))
                 .andExpect(jsonPath("$['name']").value("new name"))
                 .andExpect(jsonPath("$['url']").value("new url"))
                 .andExpect(jsonPath("$['description']").value("new description"))
-                ;
-                // TODO This runs red, research at https://github.com/spring-projects/spring-hateoas/issues/493
-//                .andExpect(jsonPath("$['imageURI']").isNotEmpty());
-//                .andExpect(jsonPath("$['links'][?(@.rel=='image')]['href']").value("http://localhost/api/groups/42/logo"));
+                .andExpect(jsonPath("$['_links']['image']['href']").value("http://localhost/api/groups/42/logo"));
     }
-
 
     @Test
     void uploadingGroupLogoForExistingGroupWithoutErrorWillReturnHTTP201() throws Exception {
@@ -154,7 +151,7 @@ class AdminGroupControllerTest {
                 .file(new MockMultipartFile("file", filename, fileType, content))
                 .param("groupID", "42")
                 .header("Authorization", jwt)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$['logoURI']").isNotEmpty());
     }
@@ -176,13 +173,13 @@ class AdminGroupControllerTest {
                 .file(new MockMultipartFile("file", filename, fileType, content))
                 .param("groupID", "4234")
                 .header("Authorization", jwt)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$['logoURI']").doesNotExist());
     }
 
     @Test
-    void creatingValidGroupDeletionWillReturnHTTP200() throws Exception {
+    void creatingValidGroupDeletionWillReturnHTTP204() throws Exception {
 
         doNothing().when(adminGroupService).deleteGroup(any());
 
@@ -192,8 +189,8 @@ class AdminGroupControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Group()))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -207,7 +204,7 @@ class AdminGroupControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Group()))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isUnprocessableEntity());
     }
 
