@@ -3,8 +3,6 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupModel;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.time.ZonedDateTime;
-
 public class EventModel extends RepresentationModel<GroupModel> {
 
     private Long id;

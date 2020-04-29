@@ -1,8 +1,6 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.authentication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,9 +36,10 @@ public class AuthenticationController {
 
         Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.createToken(authentication);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+
+        return ResponseEntity
+                .ok()
+                .body(new JWTToken(tokenProvider.createToken(authentication)));
     }
 
     /**

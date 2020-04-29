@@ -63,6 +63,8 @@ public class WebConfig implements WebMvcConfigurer {
         // setAllowedHeaders is important! Without it, OPTIONS preflight request
         // will fail with 403 Invalid CORS request
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        // allow header "Location" to be read by clients to enable them to read the location of an uploaded group logo
+        configuration.addExposedHeader("Location");
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

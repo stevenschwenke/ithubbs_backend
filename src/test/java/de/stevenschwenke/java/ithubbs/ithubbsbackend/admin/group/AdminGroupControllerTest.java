@@ -153,7 +153,7 @@ class AdminGroupControllerTest {
                 .header("Authorization", jwt)
                 .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$['logoURI']").isNotEmpty());
+                .andExpect(header().exists("Location"));
     }
 
     @Test

@@ -32,6 +32,6 @@ public class EventController {
                 .map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event))
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(new CollectionModel<>(eventModels), HttpStatus.OK);
+        return ResponseEntity.ok(new CollectionModel<>(eventModels));
     }
 }
