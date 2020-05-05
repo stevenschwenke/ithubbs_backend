@@ -114,7 +114,7 @@ class AdminEventControllerTest {
 
         Event savedEventWithID = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
         savedEventWithID.setId(42L);
-        doReturn(savedEventWithID).when(eventRepository).save(any());
+        doReturn(savedEventWithID).when(adminEventService).saveNewEvent(any());
 
         Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
 

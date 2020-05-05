@@ -1,6 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.AdminEventServiceImpl;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event.EventUpdateDTO;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,9 @@ class AdminEventServiceImplTest {
     @Test
     void editingNotExistingEventWillThrowException() {
 
-        Event validEvent = new Event(null, null, null, false);
 
         assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            adminEventService.editEvent(validEvent);
+            adminEventService.editEvent(new EventUpdateDTO());
             eventRepository.findAllByOrderByDatetimeAsc();
         });
     }
@@ -42,7 +42,7 @@ class AdminEventServiceImplTest {
 
         Event savedEvent = eventRepository.save(new Event("name", ZonedDateTime.now(), "url", false));
 
-        Event validEvent = new Event(null, null, null, false);
+        EventUpdateDTO validEvent = new EventUpdateDTO(null, null, null, false);
         validEvent.setId(savedEvent.getId());
 
         assertThrows(ConstraintViolationException.class, () -> {
@@ -57,7 +57,7 @@ class AdminEventServiceImplTest {
         ZonedDateTime date = ZonedDateTime.now();
         Event savedEvent = eventRepository.save(new Event("name", date, "url", false));
 
-        Event validEvent = new Event("new name", date, "new url", false);
+        EventUpdateDTO validEvent = new EventUpdateDTO("new name", date, "new url", false);
         validEvent.setId(savedEvent.getId());
 
         adminEventService.editEvent(validEvent);

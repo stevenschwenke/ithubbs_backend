@@ -35,23 +35,21 @@ public class AdminEventController {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<?> createOrUpdate(@RequestBody Event event) {
+    public ResponseEntity<?> createOrUpdate(@RequestBody EventUpdateDTO eventDTO) {
 
         try {
-            if (event.getId() == null) {
+            if (eventDTO.getId() == null) {
 
                 // Create
-
-                Event savedEvent = eventRepository.save(event);
+                Event savedEvent = adminEventService.saveNewEvent(eventDTO);
                 EventModel eventModel = new EventResourceAssembler(this.getClass(), EventModel.class).toModel(savedEvent);
                 return ResponseEntity
                         .created(eventModel.getLinks().getLink("self").orElseThrow().toUri())
                         .body(eventModel);
 
             } else {
-
                 // Edit
-                adminEventService.editEvent(event);
+                adminEventService.editEvent(eventDTO);
                 return ResponseEntity.ok().build();
             }
         } catch (Exception e) {
