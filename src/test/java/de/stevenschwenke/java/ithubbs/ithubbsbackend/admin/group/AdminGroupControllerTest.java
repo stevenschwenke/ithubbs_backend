@@ -194,6 +194,21 @@ class AdminGroupControllerTest {
     }
 
     @Test
+    void creatingGroupDeletionForGroupWithEventsWillReturnHTTP400() throws Exception {
+
+        doThrow(IllegalArgumentException.class).when(adminGroupService).deleteGroup(any());
+
+        String jwt = registerUserAndReturnJWT();
+
+        this.mockMvc.perform(delete("/api/admin/groups")
+                .header("Authorization", jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(new Group()))
+                .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void creatingInvalidGroupDeletionWillReturnHTTP422() throws Exception {
 
         doThrow(RuntimeException.class).when(adminGroupService).deleteGroup(any());

@@ -72,6 +72,8 @@ public class AdminGroupController {
         try {
             adminGroupService.deleteGroup(group);
 
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.unprocessableEntity().body(e.getMessage());
         }

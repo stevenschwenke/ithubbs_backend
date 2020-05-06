@@ -1,5 +1,6 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogoRepository;
@@ -22,14 +23,16 @@ import java.util.Objects;
 public class AdminGroupServiceImpl implements AdminGroupService {
 
     private final GroupRepository groupRepository;
+    private final EventRepository eventRepository;
 
     private final GroupLogoRepository groupLogoRepository;
 
     private final Tika tika = new Tika();
 
     @Autowired
-    public AdminGroupServiceImpl(GroupRepository groupRepository, GroupLogoRepository groupLogoRepository) {
+    public AdminGroupServiceImpl(GroupRepository groupRepository, EventRepository eventRepository, GroupLogoRepository groupLogoRepository) {
         this.groupRepository = groupRepository;
+        this.eventRepository = eventRepository;
         this.groupLogoRepository = groupLogoRepository;
     }
 
@@ -51,7 +54,13 @@ public class AdminGroupServiceImpl implements AdminGroupService {
     @Override
     public void deleteGroup(Group group) {
 
-        groupRepository.deleteById(group.getId());
+        Group groupFromDatabase = groupRepository.findById(group.getId()).orElseThrow();
+
+        if(eventRepository.countAllByGroup(groupFromDatabase) > 0) {
+            throw new IllegalArgumentException("Only groups with no events can be deleted");
+        } else {
+            groupRepository.deleteById(group.getId());
+        }
     }
 
     @Override

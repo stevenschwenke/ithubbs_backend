@@ -1,5 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,8 @@ class EventRepositoryTest {
 
     @Autowired
     EventRepository eventRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Test
     void persistingEventWithoutDatetimeThrowsException() {
@@ -158,4 +162,27 @@ class EventRepositoryTest {
         assertEquals(general1, events.get(0));
         assertEquals(general2, events.get(1));
     }
+
+    @Test
+    void countEventsByGroupTest() {
+
+        Group group = new Group("groupt", "group URI", "group description");
+        group = groupRepository.save(group);
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        Event event2 = new Event("event2", ZonedDateTime.now(), "event2", true);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+
+        assertEquals(Integer.valueOf(0), eventRepository.countAllByGroup(group));
+
+        event1.setGroup(group);
+        eventRepository.save(event1);
+        assertEquals(Integer.valueOf(1), eventRepository.countAllByGroup(group));
+
+        event2.setGroup(group);
+        eventRepository.save(event2);
+        assertEquals(Integer.valueOf(2), eventRepository.countAllByGroup(group));
+    }
+
 }
