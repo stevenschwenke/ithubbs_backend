@@ -13,10 +13,10 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     @Query("select e from Event e where e.datetime >= :datetime order by e.datetime asc ")
     List<Event> findAllWithDatetimeAfter(@Param("datetime") ZonedDateTime datetime);
 
-    List<Event> findAllByOrderByDatetimeAsc();
+    List<Event> findAllByOrderByDatetimeDesc();
 
-    @Query("select e from Event e where e.generalPublic = true")
-    List<Event> findAllGeneralPublic();
+    @Query("select e from Event e where e.generalPublic = true order by e.datetime desc ")
+    List<Event> findAllGeneralPublicSortDesc();
 
     Integer countAllByGroup(Group group);
 }

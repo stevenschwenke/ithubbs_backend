@@ -29,7 +29,7 @@ public class AdminEventController {
     @GetMapping(value = "")
     public ResponseEntity<CollectionModel<EventModel>> getAllEvents() {
 
-        List<EventModel> eventModels = eventRepository.findAllByOrderByDatetimeAsc().stream().map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event)).collect(Collectors.toList());
+        List<EventModel> eventModels = eventRepository.findAllByOrderByDatetimeDesc().stream().map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event)).collect(Collectors.toList());
 
         return ResponseEntity.ok(new CollectionModel<>(eventModels));
     }

@@ -156,11 +156,11 @@ class EventRepositoryTest {
         eventRepository.save(specific1);
         eventRepository.save(general2);
 
-        List<Event> events = eventRepository.findAllGeneralPublic();
+        List<Event> events = eventRepository.findAllGeneralPublicSortDesc();
 
         assertEquals(2, events.size());
-        assertEquals(general1, events.get(0));
-        assertEquals(general2, events.get(1));
+        assertEquals(general2, events.get(0));
+        assertEquals(general1, events.get(1));
     }
 
     @Test
@@ -184,5 +184,31 @@ class EventRepositoryTest {
         eventRepository.save(event2);
         assertEquals(Integer.valueOf(2), eventRepository.countAllByGroup(group));
     }
+
+    @Test
+    void eventsForAtomFeedAreOrderedByDatetimeDescending() {
+
+        Event tPlus1 = new Event("1", ZonedDateTime.now().plusDays(1), "1", true);
+        Event tPlus2 = new Event("2", ZonedDateTime.now().plusDays(2), "2", true);
+        Event tPlus3 = new Event("3", ZonedDateTime.now().plusDays(3), "3", true);
+
+        // saving in random order
+        eventRepository.save(tPlus3);
+        eventRepository.save(tPlus1);
+        eventRepository.save(tPlus2);
+
+        List<Event> allEventsForFeed = eventRepository.findAllByOrderByDatetimeDesc();
+        List<Event> generalPublicEventsForFeed = eventRepository.findAllGeneralPublicSortDesc();
+
+        assertEquals(tPlus3, allEventsForFeed.get(0));
+        assertEquals(tPlus2, allEventsForFeed.get(1));
+        assertEquals(tPlus1, allEventsForFeed.get(2));
+
+        assertEquals(tPlus3, generalPublicEventsForFeed.get(0));
+        assertEquals(tPlus2, generalPublicEventsForFeed.get(1));
+        assertEquals(tPlus1, generalPublicEventsForFeed.get(2));
+    }
+
+
 
 }

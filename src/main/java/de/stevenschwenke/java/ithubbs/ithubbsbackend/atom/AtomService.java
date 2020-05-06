@@ -15,12 +15,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Service
 public class AtomService {
 
-    private EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
     public AtomService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
@@ -39,7 +38,7 @@ public class AtomService {
 
         feed.setUpdated(new Date());
 
-        Stream<Event> eventStream = StreamSupport.stream(eventRepository.findAll().spliterator(), false);
+        Stream<Event> eventStream = eventRepository.findAllByOrderByDatetimeDesc().stream();
         List<Entry> entries = eventStream.map(this::createEntry).collect(Collectors.toList());
 
         feed.setEntries(entries);
@@ -60,7 +59,7 @@ public class AtomService {
 
         feed.setUpdated(new Date());
 
-        Stream<Event> eventStream = eventRepository.findAllGeneralPublic().stream();
+        Stream<Event> eventStream = eventRepository.findAllGeneralPublicSortDesc().stream();
         List<Entry> entries = eventStream.map(this::createEntry).collect(Collectors.toList());
 
         feed.setEntries(entries);
