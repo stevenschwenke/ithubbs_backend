@@ -69,7 +69,7 @@ class AdminEventControllerTest {
 
         Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.of("Europe/Berlin")), "url", false);
         event.setId(42L);
-        doReturn(List.of(event)).when(eventRepository).findAllByOrderByDatetimeAsc();
+        doReturn(List.of(event)).when(eventRepository).findAllByOrderByDatetimeDesc();
 
         String jwt = registerUserAndReturnJWT();
 
