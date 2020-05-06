@@ -6,7 +6,6 @@ import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupModel;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,17 +31,20 @@ public class AdminGroupController {
             if (group.getId() == null) {
 
                 Group newGroup = adminGroupService.createNewGroup(group);
-
-                return addLogoAndConvertToResponseEntity(newGroup);
+                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(newGroup);
+                return ResponseEntity
+                        .created(groupModel.getLinks().getLink("self").orElseThrow().toUri())
+                        .body(groupModel);
 
             } else {
 
                 Group editedGroup = adminGroupService.editGroup(group);
-
-                return addLogoAndConvertToResponseEntity(editedGroup);
+                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(editedGroup);
+                return ResponseEntity.ok(groupModel);
             }
+
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return ResponseEntity.unprocessableEntity().body(e.getMessage());
         }
     }
 
@@ -54,14 +56,14 @@ public class AdminGroupController {
         try {
             adminGroupService.uploadGroupLogo(groupID, file);
         } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         } catch (GroupNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return ResponseEntity.unprocessableEntity().build();
         }
 
         URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(groupID)).toUri();
 
-        return new ResponseEntity<>("{\"logoURI\":\"" + imageURI + "\"}", HttpStatus.CREATED);
+        return ResponseEntity.created(imageURI).build();
     }
 
     @DeleteMapping(value = "")
@@ -70,22 +72,12 @@ public class AdminGroupController {
         try {
             adminGroupService.deleteGroup(group);
 
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return ResponseEntity.unprocessableEntity().body(e.getMessage());
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private ResponseEntity<?> addLogoAndConvertToResponseEntity(Group savedGroup) {
-
-        GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(savedGroup);
-
-        if (savedGroup.getGroupLogo() != null) {
-            URI imageURI = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupController.class).logoOfGroup(savedGroup.getId())).toUri();
-            groupModel.setImageURI(imageURI);
-        }
-
-        return new ResponseEntity<>(groupModel, HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

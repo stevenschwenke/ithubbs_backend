@@ -1,19 +1,14 @@
-package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
+package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.event;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.CustomLocalDateTimeSerializer;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.ZonedDateTime;
 
-@Entity
-@Table(name = "events")
-public class Event {
+public class EventUpdateDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
@@ -30,13 +25,12 @@ public class Event {
 
     private Boolean generalPublic;
 
-    @ManyToOne
-    private Group group;
+    private Long groupID;
 
-    public Event() {
+    public EventUpdateDTO() {
     }
 
-    public Event(String name, ZonedDateTime datetime, String url, Boolean generalPublic) {
+    public EventUpdateDTO(String name, ZonedDateTime datetime, String url, Boolean generalPublic) {
         this.datetime = datetime;
         this.name = name;
         this.url = url;
@@ -83,11 +77,11 @@ public class Event {
         this.generalPublic = generalPublic;
     }
 
-    public Group getGroup() {
-        return group;
+    public Long getGroupID() {
+        return groupID;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroupID(Long groupID) {
+        this.groupID = groupID;
     }
 }

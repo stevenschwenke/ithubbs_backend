@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,7 +60,7 @@ class AdminEventControllerTest {
         this.mockMvc.perform(post("/api/admin/events")
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isForbidden());
     }
 
@@ -75,13 +76,13 @@ class AdminEventControllerTest {
         this.mockMvc.perform(get("/api/admin/events")
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$[0]['id']").isNumber())
-                .andExpect(jsonPath("$[0]['name']").value("name"))
-                .andExpect(jsonPath("$[0]['url']").value("url"))
-                .andExpect(jsonPath("$[0]['datetime']").value("1577901600.000000000"));
+                .andExpect(content().contentType(MediaTypes.HAL_JSON))
+                .andExpect(jsonPath("$._embedded.eventModelList[0].id").isNumber())
+                .andExpect(jsonPath("$._embedded.eventModelList[0].name").value("name"))
+                .andExpect(jsonPath("$._embedded.eventModelList[0].url").value("url"))
+                .andExpect(jsonPath("$._embedded.eventModelList[0].datetime").value("1577901600"));
     }
 
     @Test
@@ -91,7 +92,7 @@ class AdminEventControllerTest {
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url", false)))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isForbidden());
     }
 
@@ -104,16 +105,16 @@ class AdminEventControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Event()))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
-    void creatingValidEventWillReturnHTTP200() throws Exception {
+    void creatingValidEventWillReturnHTTP201() throws Exception {
 
         Event savedEventWithID = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
         savedEventWithID.setId(42L);
-        doReturn(savedEventWithID).when(eventRepository).save(any());
+        doReturn(savedEventWithID).when(adminEventService).saveNewEvent(any());
 
         Event event = new Event("name", ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 19, 0), ZoneId.systemDefault()), "url", false);
 
@@ -123,8 +124,8 @@ class AdminEventControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -134,12 +135,12 @@ class AdminEventControllerTest {
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url", false)))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void creatingValidEventEditWillReturnHTTP200() throws Exception {
+    void editingValidEventEditWillReturnHTTP200() throws Exception {
 
         doNothing().when(adminEventService).editEvent(any());
 
@@ -152,9 +153,10 @@ class AdminEventControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk());
     }
+
 
     @Test
     void creatingInvalidEventEditWillReturnHTTP422() throws Exception {
@@ -169,7 +171,7 @@ class AdminEventControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isUnprocessableEntity());
     }
 
@@ -180,7 +182,7 @@ class AdminEventControllerTest {
                 .header("Authorization", "my fake JWT")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new Event("name", ZonedDateTime.now(), "url", false)))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isForbidden());
     }
 
@@ -198,8 +200,8 @@ class AdminEventControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -215,7 +217,7 @@ class AdminEventControllerTest {
                 .header("Authorization", jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(event))
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isUnprocessableEntity());
     }
 

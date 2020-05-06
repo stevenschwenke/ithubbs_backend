@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,6 +27,7 @@ import java.util.Objects;
 
 @Configuration
 @EnableWebMvc
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class WebConfig implements WebMvcConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(WebConfig.class);
@@ -61,6 +63,8 @@ public class WebConfig implements WebMvcConfigurer {
         // setAllowedHeaders is important! Without it, OPTIONS preflight request
         // will fail with 403 Invalid CORS request
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        // allow header "Location" to be read by clients to enable them to read the location of an uploaded group logo
+        configuration.addExposedHeader("Location");
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -73,7 +77,7 @@ public class WebConfig implements WebMvcConfigurer {
      *
      * This configuration may be removed if the application is deployed under another platform-as-a-service.
      *
-     * @return
+     * @return Factory for Tomcat
      */
     @Bean
     public TomcatServletWebServerFactory servletWebServerFactory() {

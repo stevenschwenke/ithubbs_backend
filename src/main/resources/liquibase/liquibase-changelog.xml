@@ -9,4 +9,5 @@
     <include file="changelog/0001-create-basic-schema.xml" relativeToChangelogFile="true"/>
     <include file="changelog/0002-create-grouplogo.xml" relativeToChangelogFile="true"/>
     <include file="changelog/0003-add-general-public-tags.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/0004-add-event-group-mapping.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

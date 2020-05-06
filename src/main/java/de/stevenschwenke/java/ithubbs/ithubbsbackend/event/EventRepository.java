@@ -1,5 +1,6 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,6 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
     @Query("select e from Event e where e.generalPublic = true")
     List<Event> findAllGeneralPublic();
+
+    Integer countAllByGroup(Group group);
 }

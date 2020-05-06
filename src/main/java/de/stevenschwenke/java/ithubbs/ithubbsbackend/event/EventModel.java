@@ -3,17 +3,17 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupModel;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.time.ZonedDateTime;
-
 public class EventModel extends RepresentationModel<GroupModel> {
 
     private Long id;
 
-    private ZonedDateTime datetime;
+    private long datetime;
 
     private String name;
 
     private String url;
+
+    private Boolean generalPublic;
 
     public Long getId() {
         return id;
@@ -23,11 +23,11 @@ public class EventModel extends RepresentationModel<GroupModel> {
         this.id = id;
     }
 
-    public ZonedDateTime getDatetime() {
+    public long getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(ZonedDateTime datetime) {
+    public void setDatetime(long datetime) {
         this.datetime = datetime;
     }
 
@@ -45,5 +45,13 @@ public class EventModel extends RepresentationModel<GroupModel> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Boolean getGeneralPublic() {
+        return generalPublic;
+    }
+
+    public void setGeneralPublic(Boolean generalPublic) {
+        this.generalPublic = generalPublic;
     }
 }

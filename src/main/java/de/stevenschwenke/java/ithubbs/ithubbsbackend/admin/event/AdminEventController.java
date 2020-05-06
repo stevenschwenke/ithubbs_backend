@@ -5,7 +5,7 @@ import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventModel;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,33 +27,33 @@ public class AdminEventController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<List<EventModel>> getAllEvents() {
+    public ResponseEntity<CollectionModel<EventModel>> getAllEvents() {
 
         List<EventModel> eventModels = eventRepository.findAllByOrderByDatetimeAsc().stream().map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event)).collect(Collectors.toList());
 
-        return new ResponseEntity<>(eventModels, HttpStatus.OK);
+        return ResponseEntity.ok(new CollectionModel<>(eventModels));
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<?> createOrUpdate(@RequestBody Event event) {
+    public ResponseEntity<?> createOrUpdate(@RequestBody EventUpdateDTO eventDTO) {
 
         try {
-            if (event.getId() == null) {
+            if (eventDTO.getId() == null) {
 
                 // Create
-
-                Event savedEvent = eventRepository.save(event);
+                Event savedEvent = adminEventService.saveNewEvent(eventDTO);
                 EventModel eventModel = new EventResourceAssembler(this.getClass(), EventModel.class).toModel(savedEvent);
-                return new ResponseEntity<>(eventModel, HttpStatus.OK);
+                return ResponseEntity
+                        .created(eventModel.getLinks().getLink("self").orElseThrow().toUri())
+                        .body(eventModel);
 
             } else {
-
                 // Edit
-                adminEventService.editEvent(event);
-                return new ResponseEntity<>(HttpStatus.OK);
+                adminEventService.editEvent(eventDTO);
+                return ResponseEntity.ok().build();
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return ResponseEntity.unprocessableEntity().body(e.getMessage());
         }
     }
 
@@ -64,9 +64,9 @@ public class AdminEventController {
             adminEventService.deleteEvent(event);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return ResponseEntity.unprocessableEntity().body(e.getMessage());
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

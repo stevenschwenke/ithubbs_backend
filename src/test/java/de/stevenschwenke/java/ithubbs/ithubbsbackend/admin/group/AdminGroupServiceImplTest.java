@@ -1,5 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.Event;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.event.EventRepository;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogoRepository;
@@ -19,6 +21,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +35,8 @@ class AdminGroupServiceImplTest {
     private GroupRepository groupRepository;
     @Autowired
     private GroupLogoRepository groupLogoRepository;
+    @Autowired
+    private EventRepository eventRepository;
     @Autowired
     private AdminGroupServiceImpl adminGroupService;
 
@@ -102,6 +107,28 @@ class AdminGroupServiceImplTest {
         assertEquals(0, groupRepository.count());
         assertEquals(0, groupLogoRepository.count());
     }
+
+    @Test
+    void deleteExistingGroupWithEventsWillThrowIllegalArgumentExceptionAndDeleteNothing() {
+
+        groupRepository.deleteAll();
+        groupLogoRepository.deleteAll();
+
+        Group savedGroup = groupRepository.save(new Group("name", "url", "description"));
+        Event savedEvent = eventRepository.save(new Event("name", ZonedDateTime.now(), "url", false));
+        savedEvent.setGroup(savedGroup);
+
+        assertEquals(1, groupRepository.count());
+        assertEquals(1, eventRepository.count());
+
+        Group groupToDelete = new Group();
+        groupToDelete.setId(savedGroup.getId());
+        assertThrows(IllegalArgumentException.class, () -> adminGroupService.deleteGroup(groupToDelete));
+
+        assertEquals(1, eventRepository.count());
+        assertEquals(1, groupRepository.count());
+    }
+
 
     @Test
     void uploadGroupLogoForNonExistingGroupWillThrowException() throws URISyntaxException, IOException {

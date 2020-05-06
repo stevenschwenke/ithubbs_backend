@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AdminEventService {
 
-    void editEvent(Event newValue);
+    Event saveNewEvent(EventUpdateDTO eventUpdateDTO);
+
+    void editEvent(EventUpdateDTO eventUpdateDTO);
 
     void deleteEvent(Event newValue);
 }
