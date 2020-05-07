@@ -59,4 +59,9 @@ public class GroupController {
 
         return ResponseEntity.ok(content);
     }
+
+    @GetMapping(value = "/statistics")
+    public ResponseEntity<GroupStatistics> getStatisticsForEvents() {
+        return ResponseEntity.ok(groupService.calculateGroupStatistics());
+    }
 }

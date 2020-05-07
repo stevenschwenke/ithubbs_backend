@@ -12,4 +12,6 @@ public interface GroupService {
     long calculateDaysPassedSinceLastKnownEvent(Group group);
 
     Double calculateAverageNumberOfEventsPerMonth(Group group);
+
+    GroupStatistics calculateGroupStatistics();
 }

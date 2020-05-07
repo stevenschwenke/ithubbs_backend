@@ -26,6 +26,8 @@ public class GroupServiceImplTest {
     private GroupServiceImpl groupService;
     @MockBean
     private EventRepository eventRepository;
+    @MockBean
+    private GroupRepository groupRepository;
 
     @Test
     void daysPassedSinceFirstEventWillReturnZeroIfAGroupDidntOrganizeAnyEventsYet() {
@@ -104,4 +106,15 @@ public class GroupServiceImplTest {
 
         assertEquals(Double.valueOf(1), groupService.calculateAverageNumberOfEventsPerMonth(group));
     }
+
+    @Test
+    void groupStatisticsTest() {
+
+        doReturn(2L).when(groupRepository).count();
+
+        GroupStatistics groupStatistics = groupService.calculateGroupStatistics();
+
+        assertEquals(Long.valueOf(2), groupStatistics.getTotalNumberOfGroups());
+    }
+
 }

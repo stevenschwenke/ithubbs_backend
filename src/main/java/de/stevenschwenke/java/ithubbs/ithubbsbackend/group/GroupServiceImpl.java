@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -16,10 +18,12 @@ import static java.time.temporal.ChronoUnit.MONTHS;
 public class GroupServiceImpl implements GroupService {
 
     private final EventRepository eventRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public GroupServiceImpl(EventRepository eventRepository) {
+    public GroupServiceImpl(EventRepository eventRepository, GroupRepository groupRepository) {
         this.eventRepository = eventRepository;
+        this.groupRepository = groupRepository;
     }
 
     @Override
@@ -64,6 +68,30 @@ public class GroupServiceImpl implements GroupService {
 
         return (double) 0;
     }
+
+    @Override
+    public GroupStatistics calculateGroupStatistics() {
+
+        Long totalNumberOfGroups = groupRepository.count();
+
+        return new GroupStatistics(totalNumberOfGroups);
+    }
+
+    /**
+     * Round a double value as proposed in https://stackoverflow.com/questions/2808535/round-a-double-to-2-decimal-places
+     *
+     * @param value  to round
+     * @param places to round to
+     * @return rounded value
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
 
     ZonedDateTime now() {
         return ZonedDateTime.now();

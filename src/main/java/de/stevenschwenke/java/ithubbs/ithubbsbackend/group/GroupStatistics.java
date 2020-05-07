@@ -5,7 +5,6 @@ import lombok.Value;
 @Value
 public class GroupStatistics {
 
-    Integer totalNumberOfGroups;
-    Integer numberOfActiveGroups;
+    Long totalNumberOfGroups;
 
 }
