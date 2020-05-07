@@ -19,4 +19,8 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     List<Event> findAllGeneralPublicSortDesc();
 
     Integer countAllByGroup(Group group);
+
+    Event findFirstByGroupOrderByDatetimeAsc(Group group);
+
+    Event findFirstByGroupOrderByDatetimeDesc(Group group);
 }

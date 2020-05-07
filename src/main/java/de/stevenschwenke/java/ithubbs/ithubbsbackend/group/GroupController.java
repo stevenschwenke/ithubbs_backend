@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/groups")
 public class GroupController {
 
+    private final GroupService groupService;
     private final GroupRepository groupRepository;
 
     @Autowired
-    public GroupController(GroupRepository groupRepository) {
+    public GroupController(GroupService groupService, GroupRepository groupRepository) {
+        this.groupService = groupService;
         this.groupRepository = groupRepository;
     }
 
@@ -27,7 +29,7 @@ public class GroupController {
         List<GroupModel> groupModels = groupRepository
                 .findAllByOrderByNameAsc()
                 .stream()
-                .map((group) -> new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(group))
+                .map((group) -> new GroupResourceAssembler(this.getClass(), GroupModel.class, groupService).toModel(group))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(new CollectionModel<>(groupModels));
     }
@@ -40,7 +42,7 @@ public class GroupController {
         if (groupOptional.isPresent()) {
             Group group = groupOptional.get();
 
-            GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(group);
+            GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class, groupService).toModel(group);
             return ResponseEntity.ok(groupModel);
         } else {
             return ResponseEntity.notFound().build();

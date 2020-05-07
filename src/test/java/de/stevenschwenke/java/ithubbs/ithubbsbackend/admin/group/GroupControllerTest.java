@@ -1,10 +1,7 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
 import de.stevenschwenke.java.ithubbs.ithubbsbackend.authentication.TokenProvider;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupController;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupLogo;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupRepository;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,6 +33,8 @@ public class GroupControllerTest {
     private TokenProvider tokenProvider;
     @MockBean
     private GroupRepository groupRepository;
+    @MockBean
+    private GroupService groupService;
 
     @Test
     void requestSpecificGroupWillReturnHTTP200AndEmptyContentIfGroupDoesNotExist() throws Exception {
