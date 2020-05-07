@@ -1,9 +1,8 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupModel;
 import org.springframework.hateoas.RepresentationModel;
 
-public class EventModel extends RepresentationModel<GroupModel> {
+public class EventModel extends RepresentationModel<EventModel> {
 
     private Long id;
 

@@ -1,9 +1,6 @@
 package de.stevenschwenke.java.ithubbs.ithubbsbackend.admin.group;
 
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.Group;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupController;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupModel;
-import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.GroupResourceAssembler;
+import de.stevenschwenke.java.ithubbs.ithubbsbackend.group.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +14,12 @@ import java.net.URI;
 @RequestMapping("/api/admin/groups")
 public class AdminGroupController {
 
+    private final GroupService groupService;
     private final AdminGroupService adminGroupService;
 
     @Autowired
-    public AdminGroupController(AdminGroupService adminGroupService) {
+    public AdminGroupController(GroupService groupService, AdminGroupService adminGroupService) {
+        this.groupService = groupService;
         this.adminGroupService = adminGroupService;
     }
 
@@ -31,7 +30,7 @@ public class AdminGroupController {
             if (group.getId() == null) {
 
                 Group newGroup = adminGroupService.createNewGroup(group);
-                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(newGroup);
+                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class, groupService).toModel(newGroup);
                 return ResponseEntity
                         .created(groupModel.getLinks().getLink("self").orElseThrow().toUri())
                         .body(groupModel);
@@ -39,7 +38,7 @@ public class AdminGroupController {
             } else {
 
                 Group editedGroup = adminGroupService.editGroup(group);
-                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class).toModel(editedGroup);
+                GroupModel groupModel = new GroupResourceAssembler(this.getClass(), GroupModel.class, groupService).toModel(editedGroup);
                 return ResponseEntity.ok(groupModel);
             }
 

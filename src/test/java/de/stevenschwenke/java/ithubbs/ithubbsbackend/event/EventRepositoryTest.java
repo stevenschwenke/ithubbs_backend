@@ -166,7 +166,7 @@ class EventRepositoryTest {
     @Test
     void countEventsByGroupTest() {
 
-        Group group = new Group("groupt", "group URI", "group description");
+        Group group = new Group("group", "group URI", "group description");
         group = groupRepository.save(group);
 
         Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
@@ -209,6 +209,68 @@ class EventRepositoryTest {
         assertEquals(tPlus1, generalPublicEventsForFeed.get(2));
     }
 
+    @Test
+    void findOldestEventByGroup() {
 
+        Group group = new Group("group", "group URI", "group description");
+        group = groupRepository.save(group);
 
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        event1.setGroup(group);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        event2.setGroup(group);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+
+        assertEquals(event1, eventRepository.findFirstByGroupOrderByDatetimeAsc(group));
+    }
+
+    @Test
+    void findMostRecentEventByGroup() {
+
+        Group group = new Group("group", "group URI", "group description");
+        group = groupRepository.save(group);
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        event1.setGroup(group);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        event2.setGroup(group);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+
+        assertEquals(event2, eventRepository.findFirstByGroupOrderByDatetimeDesc(group));
+    }
+
+    @Test
+    void countAllByDatetimeAfterReturnsCorrectValue() {
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+
+        assertEquals(Integer.valueOf(2), eventRepository.countAllByDatetimeAfter(ZonedDateTime.now().minusDays(10)));
+    }
+
+    @Test
+    void searchForEarliestKnownEventReturnsCorrectValue() {
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+
+        assertEquals(event1, eventRepository.findTopByOrderByDatetimeAsc());
+    }
+
+    @Test
+    void searchForLatestKnownEventReturnsCorrectValue() {
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+
+        assertEquals(event2, eventRepository.findTopByOrderByDatetimeDesc());
+    }
 }

@@ -46,6 +46,8 @@ dependencies {
     testImplementation('org.springframework.security:spring-security-test')
 
     compile group: 'org.apache.tika', name: 'tika-core', version: '1.22'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 
     testCompile('org.junit.jupiter:junit-jupiter-api:5.3.2')
     testRuntime('org.junit.jupiter:junit-jupiter-engine:5.3.2')

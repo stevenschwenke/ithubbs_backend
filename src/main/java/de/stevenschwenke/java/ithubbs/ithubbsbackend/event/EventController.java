@@ -2,7 +2,6 @@ package de.stevenschwenke.java.ithubbs.ithubbsbackend.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,10 +15,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/events")
 public class EventController {
 
+    private final EventService eventService;
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventController(EventRepository eventRepository) {
+    public EventController(EventService eventService, EventRepository eventRepository) {
+        this.eventService = eventService;
         this.eventRepository = eventRepository;
     }
 
@@ -33,5 +34,10 @@ public class EventController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new CollectionModel<>(eventModels));
+    }
+
+    @GetMapping(value = "/statistics")
+    public ResponseEntity<EventStatistics> getStatisticsForEvents() {
+        return ResponseEntity.ok(eventService.calculateEventStatistics());
     }
 }
