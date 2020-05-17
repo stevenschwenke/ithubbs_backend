@@ -70,6 +70,21 @@ public class GroupServiceImplTest {
     }
 
     @Test
+    void averageNumberOfEventsReturnsOneIfCalculationWouldReturnDivisionByZero() {
+
+        ZonedDateTime now = ZonedDateTime.of(2020, 1, 20, 1, 0, 0, 0, ZoneId.systemDefault());
+        doReturn(now).when(groupService).now();
+        Group group = new Group();
+        Event event = new Event();
+        event.setDatetime(now.plusMonths(1));
+
+        when(eventRepository.findFirstByGroupOrderByDatetimeAsc(group)).thenReturn(event);
+        when(eventRepository.countAllByGroup(group)).thenReturn(1);
+
+        assertEquals(Double.valueOf(1), groupService.calculateAverageNumberOfEventsPerMonth(group));
+    }
+
+    @Test
     void averageNumberOfEventsIsZeroIfAGroupDidntOrganizeAnyEventsYet() {
 
         Group group = new Group();

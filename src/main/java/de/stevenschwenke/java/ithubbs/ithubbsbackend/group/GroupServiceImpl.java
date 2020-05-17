@@ -63,7 +63,7 @@ public class GroupServiceImpl implements GroupService {
         if (firstEvent != null) {
             long monthsPassedSinceFirstEvent = firstEvent.getDatetime().until(now(), MONTHS);
             Integer numberOfTotalEvents = eventRepository.countAllByGroup(group);
-            return (double) numberOfTotalEvents / (monthsPassedSinceFirstEvent + 1);
+            return (double) numberOfTotalEvents / (monthsPassedSinceFirstEvent <= 0 ? 1 : monthsPassedSinceFirstEvent + 1);
         }
 
         return (double) 0;
