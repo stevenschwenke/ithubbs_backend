@@ -273,4 +273,36 @@ class EventRepositoryTest {
 
         assertEquals(event2, eventRepository.findTopByOrderByDatetimeDesc());
     }
+
+    @Test
+    void findAllInYearFindsAllEventsInThatYearCorrectly() {
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        Event event3 = new Event("event3", ZonedDateTime.now().plusYears(1), "event3", true);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+        eventRepository.save(event3);
+
+        List<Event> foundEvents = eventRepository.findAllInYear(ZonedDateTime.now().getYear());
+        assertEquals(2, foundEvents.size());
+        assertEquals(event1, foundEvents.get(0));
+        assertEquals(event2, foundEvents.get(1));
+    }
+
+    @Test
+    void findAllYearsOfEventsFindsAllYearsCorrectly() {
+
+        Event event1 = new Event("event1", ZonedDateTime.now(), "event1", true);
+        Event event2 = new Event("event2", ZonedDateTime.now().plusDays(1), "event2", true);
+        Event event3 = new Event("event3", ZonedDateTime.now().plusYears(1), "event3", true);
+        eventRepository.save(event1);
+        eventRepository.save(event2);
+        eventRepository.save(event3);
+
+        List<Integer> datetimeOfEvents = eventRepository.findAllYearsOfEvents();
+        assertEquals(2, datetimeOfEvents.size());
+        assertEquals(ZonedDateTime.now().getYear(), datetimeOfEvents.get(0).intValue());
+        assertEquals(ZonedDateTime.now().getYear() + 1, datetimeOfEvents.get(1).intValue());
+    }
 }

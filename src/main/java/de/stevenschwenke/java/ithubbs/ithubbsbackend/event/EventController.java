@@ -5,6 +5,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.ZonedDateTime;
@@ -24,11 +25,24 @@ public class EventController {
         this.eventRepository = eventRepository;
     }
 
-    @GetMapping(value = "")
-    public ResponseEntity<CollectionModel<EventModel>> getAllEvents() {
+    @GetMapping(value = "/years")
+    public ResponseEntity<CollectionModel<Integer>> getYearsOfEvents() {
+        List<Integer> years = eventService.retrieveYearsWithEvents();
+        return ResponseEntity.ok(new CollectionModel<>(years));
+    }
 
-        List<EventModel> eventModels = eventRepository
-                .findAllWithDatetimeAfter(ZonedDateTime.now())
+    @GetMapping(value = "")
+    public ResponseEntity<CollectionModel<EventModel>> getAllEvents(@RequestParam(required = false) Integer year) {
+
+        List<Event> requestedEvents;
+
+        if (year != null) {
+            requestedEvents = eventRepository.findAllInYear(year);
+        } else {
+            requestedEvents = eventRepository.findAllWithDatetimeAfter(ZonedDateTime.now());
+        }
+
+        List<EventModel> eventModels = requestedEvents
                 .stream()
                 .map((event) -> new EventResourceAssembler(this.getClass(), EventModel.class).toModel(event))
                 .collect(Collectors.toList());

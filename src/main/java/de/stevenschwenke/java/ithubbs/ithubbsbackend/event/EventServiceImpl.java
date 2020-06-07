@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.MONTHS;
 
@@ -32,6 +33,11 @@ public class EventServiceImpl implements EventService {
         double averageNumberOfEventsPerMonth = (double) numberOfEvents / (double) (datetimeOfEarliestKnownEvent.until(datetimeOfLatestKnownEvent, MONTHS) + 1);
 
         return new EventStatistics(numberOfEvents, numberOfFutureEvents, round(averageNumberOfEventsPerMonth, 1));
+    }
+
+    @Override
+    public List<Integer> retrieveYearsWithEvents() {
+        return eventRepository.findAllYearsOfEvents();
     }
 
     /**
