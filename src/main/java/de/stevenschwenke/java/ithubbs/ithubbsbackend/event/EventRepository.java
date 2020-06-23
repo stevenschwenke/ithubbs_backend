@@ -13,6 +13,9 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     @Query("select e from Event e where e.datetime >= :datetime order by e.datetime asc ")
     List<Event> findAllWithDatetimeAfter(@Param("datetime") ZonedDateTime datetime);
 
+    @Query("select e from Event e where year(e.datetime) = :year")
+    List<Event> findAllInYear(@Param("year") Integer year);
+
     Integer countAllByDatetimeAfter(@Param("datetime") ZonedDateTime datetime);
 
     List<Event> findAllByOrderByDatetimeDesc();
@@ -43,4 +46,7 @@ public interface EventRepository extends CrudRepository<Event, Long> {
      * @return latest known event of a specific group
      */
     Event findFirstByGroupOrderByDatetimeDesc(Group group);
+
+    @Query("select distinct year(e.datetime) from Event e")
+    List<Integer> findAllYearsOfEvents();
 }
